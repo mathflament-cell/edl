@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>État des lieux</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="État des lieux">
+<meta name="theme-color" content="#FAF8F3">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --ink:#2B2620;
+  --ink-soft:#6B6258;
+  --ink-faint:#A39A8C;
+  --paper:#FAF8F3;
+  --paper-raised:#FFFFFF;
+  --line:#E6E0D4;
+  --line-strong:#D3CABA;
+  --clay:#B5623C;
+  --clay-soft:#F1DDD2;
+  --clay-dark:#7A3F26;
+  --sage:#6E7F5C;
+  --sage-soft:#E2E8D8;
+  --sage-dark:#42502F;
+  --amber:#C08A2E;
+  --amber-soft:#F2E3C4;
+  --amber-dark:#7A5715;
+  --red:#A8453A;
+  --red-soft:#F2D9D5;
+  --red-dark:#6E261D;
+  --radius:14px;
+  --radius-sm:9px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  min-height:100vh;
+  min-height:100dvh;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+  overflow-x:hidden;
+}
+h1,h2,h3{font-weight:600; margin:0; letter-spacing:-0.01em;}
+button{font-family:inherit;}
+.serif{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;}
+
+/* ---------- App shell ---------- */
+#app{max-width:900px; margin:0 auto; padding:0 18px 100px;}
+
+.topbar{
+  position:sticky; top:0; z-index:50;
+  background:var(--paper);
+  padding:14px 0 10px;
+  border-bottom:1px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px;
+}
+.topbar .brand{display:flex; align-items:center; gap:10px;}
+.brand-mark{
+  width:34px;height:34px;border-radius:9px;background:var(--clay);
+  display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;
+}
+.brand-mark svg{width:18px;height:18px;}
+.brand-text .t1{font-size:15px;font-weight:600;line-height:1.2;}
+.brand-text .t2{font-size:12px;color:var(--ink-soft);line-height:1.2;}
+.iconbtn{
+  width:38px;height:38px;border-radius:50%;border:1px solid var(--line-strong);
+  background:var(--paper-raised); display:flex;align-items:center;justify-content:center;
+  color:var(--ink-soft);
+}
+.iconbtn svg{width:18px;height:18px;}
+
+/* ---------- Screens ---------- */
+.screen{display:none;}
+.screen.active{display:block; animation:fadeIn .25s ease;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)}}
+
+/* ---------- Home / list of EDL ---------- */
+.hero{padding:22px 0 6px;}
+.hero .eyebrow{font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--clay-dark); font-weight:600; margin-bottom:6px;}
+.hero h1{font-size:24px;}
+.hero p{color:var(--ink-soft); font-size:14.5px; margin-top:6px; line-height:1.5;}
+
+.cta-new{
+  margin:18px 0 24px;
+  display:flex; align-items:center; gap:12px;
+  background:var(--clay); color:#fff;
+  border:none; border-radius:var(--radius); padding:16px 18px;
+  width:100%; font-size:15.5px; font-weight:600;
+}
+.cta-new svg{width:20px;height:20px;flex-shrink:0;}
+
+.section-label{font-size:12px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-faint); font-weight:600; margin:22px 0 10px;}
+
+.edl-card{
+  background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius);
+  padding:14px 16px; margin-bottom:10px; display:flex; align-items:center; gap:12px;
+}
+.edl-card .pin{width:6px;align-self:stretch;border-radius:4px;background:var(--sage);flex-shrink:0;}
+.edl-card.partial .pin{background:var(--amber);}
+.edl-card .body{flex:1; min-width:0;}
+.edl-card .addr{font-size:15px;font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.edl-card .meta{font-size:12.5px;color:var(--ink-soft); margin-top:3px;}
+.edl-card .pct{font-size:13px;font-weight:600;color:var(--sage-dark); flex-shrink:0;}
+.edl-card.partial .pct{color:var(--amber-dark);}
+.empty-state{
+  text-align:center; padding:40px 20px; color:var(--ink-faint); font-size:14px;
+}
+
+/* ---------- New EDL form ---------- */
+.field{margin-bottom:16px;}
+.field label{display:block; font-size:13px; font-weight:600; color:var(--ink-soft); margin-bottom:6px;}
+.field input, .field select, .field textarea{
+  width:100%; border:1px solid var(--line-strong); border-radius:var(--radius-sm);
+  background:var(--paper-raised); padding:11px 12px; font-size:15px; color:var(--ink);
+  font-family:inherit;
+}
+.field textarea{resize:vertical; min-height:64px;}
+.field-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+
+.btn-primary{
+  width:100%; background:var(--clay); color:#fff; border:none; border-radius:var(--radius);
+  padding:15px; font-size:15.5px; font-weight:600; margin-top:6px;
+}
+.btn-secondary{
+  width:100%; background:transparent; color:var(--ink-soft); border:1px solid var(--line-strong);
+  border-radius:var(--radius); padding:13px; font-size:14.5px; font-weight:500; margin-top:10px;
+}
+
+/* ---------- Detail screen ---------- */
+.detail-header{padding:18px 0 4px;}
+.detail-header .back{
+  display:inline-flex; align-items:center; gap:6px; color:var(--ink-soft); font-size:13.5px;
+  font-weight:500; margin-bottom:14px; background:none; border:none; padding:0;
+}
+.detail-header .back svg{width:16px;height:16px;}
+.detail-header h1{font-size:21px;}
+.detail-header .sub{font-size:13px;color:var(--ink-soft); margin-top:4px;}
+
+.progress-wrap{margin:16px 0 6px;}
+.progress-bar{height:6px;background:var(--line); border-radius:4px; overflow:hidden;}
+.progress-fill{height:100%; background:var(--sage); border-radius:4px; transition:width .3s ease;}
+.progress-label{display:flex; justify-content:space-between; font-size:12px; color:var(--ink-soft); margin-top:6px;}
+
+.tabbar{
+  display:flex; gap:6px; overflow-x:auto; padding:14px 0 4px; margin-bottom:6px;
+  scrollbar-width:none;
+}
+.tabbar::-webkit-scrollbar{display:none;}
+.tabchip{
+  flex-shrink:0; padding:8px 14px; border-radius:20px; border:1px solid var(--line-strong);
+  background:var(--paper-raised); font-size:13.5px; font-weight:500; color:var(--ink-soft);
+  white-space:nowrap; position:relative;
+}
+.tabchip.active{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+.tabchip .dot{
+  display:inline-block; width:6px;height:6px;border-radius:50%; margin-left:6px; vertical-align:middle;
+  background:var(--sage);
+}
+.tabchip.active .dot{background:#9FD18A;}
+
+.room-section{margin-top:6px;}
+.room-title{font-size:18px; margin:18px 0 4px; display:flex; align-items:center; gap:8px;}
+.room-title .icon{width:22px;height:22px; color:var(--clay); flex-shrink:0;}
+.room-note-field{margin-bottom:14px;}
+.room-note-field textarea{width:100%; border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px 12px; font-size:14px; min-height:50px; background:var(--paper-raised); font-family:inherit;}
+.room-note-field label{font-size:12px;color:var(--ink-faint); display:block; margin-bottom:4px;}
+
+.poste{
+  background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius);
+  padding:14px 16px; margin-bottom:10px;
+}
+.poste-head{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+.poste-name{font-size:14.5px; font-weight:600;}
+.poste-points{font-size:12px; color:var(--ink-faint); margin-top:2px; line-height:1.5;}
+
+.state-row{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:12px;}
+.state-btn{
+  border:1px solid var(--line-strong); background:var(--paper); border-radius:9px;
+  padding:9px 4px; font-size:11.5px; font-weight:600; color:var(--ink-soft); text-align:center;
+  line-height:1.25;
+}
+.state-btn.sel-neuf{background:var(--sage); border-color:var(--sage); color:#fff;}
+.state-btn.sel-bon{background:var(--sage-soft); border-color:var(--sage); color:var(--sage-dark);}
+.state-btn.sel-usage{background:var(--amber-soft); border-color:var(--amber); color:var(--amber-dark);}
+.state-btn.sel-mauvais{background:var(--red-soft); border-color:var(--red); color:var(--red-dark);}
+
+.poste-extra{display:flex; gap:8px; margin-top:10px;}
+.na-toggle{
+  flex-shrink:0; font-size:12px; font-weight:600; color:var(--ink-faint); border:1px solid var(--line-strong);
+  border-radius:8px; padding:8px 10px; background:var(--paper);
+}
+.na-toggle.on{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+.poste-comment{
+  flex:1; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:13px;
+  background:var(--paper); font-family:inherit;
+}
+
+/* ---------- Bottom nav ---------- */
+.bottomnav{
+  position:fixed; left:0; right:0; bottom:0; z-index:50;
+  background:var(--paper-raised); border-top:1px solid var(--line);
+  padding:10px 18px calc(10px + env(safe-area-inset-bottom));
+  display:flex; gap:10px; max-width:900px; margin:0 auto;
+}
+.bottomnav button{flex:1; border-radius:var(--radius-sm); padding:12px; font-size:14px; font-weight:600; border:none;}
+.bn-back{background:var(--paper); border:1px solid var(--line-strong) !important; color:var(--ink-soft);}
+.bn-next{background:var(--clay); color:#fff;}
+.bn-finish{background:var(--sage);color:#fff;}
+
+/* ---------- Summary screen ---------- */
+.summary-card{background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius); padding:18px; margin-bottom:14px;}
+.summary-stat-row{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:16px 0;}
+.sstat{background:var(--paper); border-radius:9px; padding:10px 6px; text-align:center;}
+.sstat .n{font-size:18px;font-weight:700;}
+.sstat .l{font-size:10.5px;color:var(--ink-soft); margin-top:2px;}
+.sstat.neuf .n{color:var(--sage-dark);}
+.sstat.bon .n{color:var(--sage-dark);}
+.sstat.usage .n{color:var(--amber-dark);}
+.sstat.mauvais .n{color:var(--red-dark);}
+
+.signbox{
+  border:1.5px dashed var(--line-strong); border-radius:var(--radius); height:140px;
+  margin-top:8px; touch-action:none; background:var(--paper-raised); position:relative;
+}
+.signbox canvas{width:100%;height:100%; border-radius:var(--radius);}
+.sign-clear{font-size:12px; color:var(--clay-dark); margin-top:6px; background:none; border:none; padding:0; font-weight:600;}
+
+.toast{
+  position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+  background:var(--ink); color:var(--paper); padding:10px 18px; border-radius:30px;
+  font-size:13.5px; font-weight:500; z-index:100; opacity:0; pointer-events:none; transition:opacity .25s;
+}
+.toast.show{opacity:1;}
+
+.installhint{
+  display:none; background:var(--clay-soft); border-radius:var(--radius-sm); padding:12px 14px;
+  font-size:13px; color:var(--clay-dark); margin:14px 0; line-height:1.5;
+}
+.installhint.show{display:block;}
+.installhint b{font-weight:700;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></div>
+      <div class="brand-text">
+        <div class="t1" id="brandTitle">Mes états des lieux</div>
+        <div class="t2" id="brandSub">Entrée locataire</div>
+      </div>
+    </div>
+    <button class="iconbtn" id="helpBtn" aria-label="Aide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 2-3 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="hero">
+      <div class="eyebrow">Bienvenue</div>
+      <h1>Vos états des lieux</h1>
+      <p>Créez un état des lieux d'entrée, cochez chaque poste pièce par pièce, et terminez par les signatures. Tout reste enregistré sur cet iPad, même hors connexion.</p>
+    </div>
+    <div class="installhint" id="installHint">
+      <b>Astuce :</b> ajoutez cette app à votre écran d'accueil pour l'ouvrir comme une vraie application — appuyez sur l'icône de partage <span style="font-weight:700">⬆️</span> dans Safari, puis "Sur l'écran d'accueil".
+    </div>
+    <button class="cta-new" id="newEdlBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nouvel état des lieux
+    </button>
+    <div class="section-label">En cours / terminés</div>
+    <div id="edlList"></div>
+  </div>
+
+  <!-- NEW EDL FORM -->
+  <div class="screen" id="screen-new">
+    <div class="detail-header">
+      <button class="back" id="backFromNew"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Annuler</button>
+      <h1>Informations administratives</h1>
+      <div class="sub">Ces données ouvrent le rapport d'état des lieux</div>
+    </div>
+
+    <div class="field">
+      <label>Adresse du logement</label>
+      <input type="text" id="f-adresse" placeholder="12 rue des Lilas, 75011 Paris">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Étage / porte</label>
+        <input type="text" id="f-etage" placeholder="3e étage, porte gauche">
+      </div>
+      <div class="field">
+        <label>Type de bien</label>
+        <select id="f-type">
+          <option>Appartement</option>
+          <option>Maison</option>
+          <option>Studio</option>
+          <option>Local commercial</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Date du rendez-vous</label>
+        <input type="date" id="f-date">
+      </div>
+      <div class="field">
+        <label>Heure</label>
+        <input type="time" id="f-heure">
+      </div>
+    </div>
+    <div class="field">
+      <label>Bailleur / mandataire</label>
+      <input type="text" id="f-bailleur" placeholder="Nom, prénom ou agence">
+    </div>
+    <div class="field">
+      <label>Locataire(s)</label>
+      <input type="text" id="f-locataire" placeholder="Nom(s), prénom(s)">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Chauffage</label>
+        <select id="f-chauffage">
+          <option>Individuel électrique</option>
+          <option>Individuel gaz</option>
+          <option>Collectif</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Nombre de clés remises</label>
+        <input type="number" id="f-cles" placeholder="3" min="0">
+      </div>
+    </div>
+    <div class="field">
+      <label>Relevés compteurs (électricité / gaz / eau)</label>
+      <textarea id="f-compteurs" placeholder="Électricité n°... index ... / Gaz n°... index ... / Eau n°... index ..."></textarea>
+    </div>
+    <div class="field">
+      <label>Pièces à inclure</label>
+      <textarea id="f-pieces" placeholder="Une pièce par ligne. Modifiez la liste proposée si besoin.">Entrée
+Séjour
+Cuisine
+Chambre 1
+Salle de bain
+WC
+Couloir</textarea>
+    </div>
+
+    <button class="btn-primary" id="createEdlBtn">Créer et commencer la visite</button>
+  </div>
+
+  <!-- DETAIL / CHECKLIST -->
+  <div class="screen" id="screen-detail">
+    <div class="detail-header">
+      <button class="back" id="backFromDetail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Mes états des lieux</button>
+      <h1 id="detailAddr">Adresse</h1>
+      <div class="sub" id="detailMeta">Date</div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="progress-label"><span id="progressText">0 / 0 postes</span><span id="progressPct">0%</span></div>
+      </div>
+    </div>
+    <div class="tabbar" id="tabbar"></div>
+    <div id="roomContent"></div>
+  </div>
+
+  <!-- SUMMARY / SIGN -->
+  <div class="screen" id="screen-summary">
+    <div class="detail-header">
+      <button class="back" id="backFromSummary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Retour à la visite</button>
+      <h1>Récapitulatif et signatures</h1>
+      <div class="sub">Vérifiez les chiffres avant de faire signer</div>
+    </div>
+
+    <div class="summary-card">
+      <div style="font-size:13px;color:var(--ink-soft);font-weight:600;">Bilan général</div>
+      <div class="summary-stat-row" id="summaryStats"></div>
+      <div id="summaryNAlist" style="font-size:12.5px;color:var(--ink-faint);"></div>
+    </div>
+
+    <div class="summary-card">
+      <div style="font-size:13px;color:var(--ink-soft);font-weight:600; margin-bottom:4px;">Signature du bailleur / mandataire</div>
+      <div class="signbox"><canvas id="sign1"></canvas></div>
+      <button class="sign-clear" data-target="sign1">Effacer la signature</button>
+    </div>
+    <div class="summary-card">
+      <div style="font-size:13px;color:var(--ink-soft);font-weight:600; margin-bottom:4px;">Signature du locataire</div>
+      <div class="signbox"><canvas id="sign2"></canvas></div>
+      <button class="sign-clear" data-target="sign2">Effacer la signature</button>
+    </div>
+
+    <button class="btn-primary" id="finalizeBtn">Marquer comme terminé</button>
+    <button class="btn-secondary" id="exportBtn">Exporter en texte (copier)</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== DATA MODEL ===================== */
+const POSTES_TEMPLATE = {
+  "Entrée": ["Sols","Murs et plafonds","Porte d'entrée","Interphone / digicode","Boîte aux lettres","Électricité (prises, interrupteurs)"],
+  "Séjour": ["Sols","Murs et plafonds","Fenêtres et volets","Portes intérieures","Électricité (prises, interrupteurs)","Chauffage","Détecteur de fumée","Placards"],
+  "Cuisine": ["Sols","Murs et plafonds (crédence)","Fenêtres et volets","Plaques de cuisson","Four","Hotte aspirante","Évier et robinetterie","Plan de travail","Meubles hauts et bas","Électricité (prises, interrupteurs)"],
+  "Chambre 1": ["Sols","Murs et plafonds","Fenêtres et volets","Porte","Électricité (prises, interrupteurs)","Chauffage","Placards"],
+  "Salle de bain": ["Sols","Murs et plafonds / carrelage","Baignoire ou douche","Robinetterie","Lavabo","Ventilation (VMC)","Électricité (prises, interrupteurs)"],
+  "WC": ["Sols","Murs et plafonds","WC (cuvette, chasse d'eau, fixation)","Ventilation"],
+  "Couloir": ["Sols","Murs et plafonds","Électricité (prises, interrupteurs)","Placards"]
+};
+const POSTE_POINTS = {
+  "Sols":"Revêtement, rayures, taches, trous, joints, plinthes",
+  "Murs et plafonds":"Fissures, traces d'humidité, moisissures, trous de chevilles",
+  "Murs et plafonds (crédence)":"Fissures, traces d'humidité, état du carrelage mural",
+  "Murs et plafonds / carrelage":"Joints, fissures, traces d'humidité",
+  "Fenêtres et volets":"Ouverture/fermeture, vitres, joints, volets manuels ou électriques",
+  "Porte d'entrée":"Serrure, poignée, peinture, joints",
+  "Portes intérieures":"Ouverture/fermeture, poignée, peinture",
+  "Porte":"Ouverture/fermeture, poignée, peinture",
+  "Interphone / digicode":"Fonctionnement, audio, image si visio",
+  "Boîte aux lettres":"Serrure, clé, état général",
+  "Électricité (prises, interrupteurs)":"Tester chaque prise, état des interrupteurs, tableau électrique",
+  "Chauffage":"Type, nombre, fonctionnement",
+  "Détecteur de fumée":"Présence obligatoire, tester le bouton test",
+  "Placards":"Portes, charnières, étagères, fermeture",
+  "Plaques de cuisson":"Nombre de feux, état, fonctionnement",
+  "Four":"Propreté, état, fonctionnement",
+  "Hotte aspirante":"Filtre, fonctionnement",
+  "Évier et robinetterie":"Fuites, calcaire, écoulement",
+  "Plan de travail":"Brûlures, taches, état du revêtement",
+  "Meubles hauts et bas":"Charnières, poignées, état des façades",
+  "Baignoire ou douche":"Joints, fissures, écoulement, paroi",
+  "Robinetterie":"Fuites, calcaire, pression",
+  "Lavabo":"Fixation, fissures, écoulement",
+  "Ventilation (VMC)":"Fonctionnement, grille propre",
+  "Ventilation":"Fonctionnement, grille propre",
+  "WC (cuvette, chasse d'eau, fixation)":"Fixation au sol, chasse d'eau, abattant"
+};
+const STATES = [
+  {key:"neuf", label:"Neuf", cls:"sel-neuf"},
+  {key:"bon", label:"Bon état", cls:"sel-bon"},
+  {key:"usage", label:"État d'usage", cls:"sel-usage"},
+  {key:"mauvais", label:"Mauvais état", cls:"sel-mauvais"}
+];
+
+let DB = JSON.parse(localStorage.getItem('edl_db') || '[]');
+let currentId = null;
+let currentRoom = null;
+
+function saveDB(){ localStorage.setItem('edl_db', JSON.stringify(DB)); }
+function getCurrent(){ return DB.find(e=>e.id===currentId); }
+
+function uid(){ return 'edl_' + Date.now() + '_' + Math.floor(Math.random()*1000); }
+
+/* ===================== NAVIGATION ===================== */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+/* ===================== HOME ===================== */
+function renderHome(){
+  const list = document.getElementById('edlList');
+  list.innerHTML = '';
+  if(DB.length===0){
+    list.innerHTML = '<div class="empty-state">Aucun 00e9tat des lieux pour l2019instant.<br>Cr00e9ez le premier avec le bouton ci-dessus.</div>';
+    return;
+  }
+  DB.slice().reverse().forEach(edl=>{
+    const {done,total} = computeProgress(edl);
+    const pct = total ? Math.round(done/total*100) : 0;
+    const card = document.createElement('div');
+    card.className = 'edl-card' + (pct<100 ? ' partial' : '');
+    card.innerHTML = `
+      <div class="pin"></div>
+      <div class="body">
+        <div class="addr">${escapeHtml(edl.adresse || 'Sans adresse')}</div>
+        <div class="meta">${escapeHtml(edl.date || '')} · ${escapeHtml(edl.type || '')}</div>
+      </div>
+      <div class="pct">${pct}%</div>
+    `;
+    card.addEventListener('click', ()=>openDetail(edl.id));
+    list.appendChild(card);
+  });
+}
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function computeProgress(edl){
+  let done=0, total=0;
+  Object.keys(edl.rooms).forEach(r=>{
+    edl.rooms[r].postes.forEach(p=>{
+      total++;
+      if(p.state || p.na) done++;
+    });
+  });
+  return {done,total};
+}
+
+document.getElementById('newEdlBtn').addEventListener('click', ()=>{
+  document.getElementById('f-date').value = new Date().toISOString().slice(0,10);
+  showScreen('screen-new');
+});
+document.getElementById('backFromNew').addEventListener('click', ()=>showScreen('screen-home'));
+
+document.getElementById('createEdlBtn').addEventListener('click', ()=>{
+  const adresse = document.getElementById('f-adresse').value.trim();
+  if(!adresse){ toast('Indiquez au moins ll’adresse'); return; }
+  const pieces = document.getElementById('f-pieces').value.split('\\n').map(s=>s.trim()).filter(Boolean);
+  const rooms = {};
+  pieces.forEach(p=>{
+    const postesNames = POSTES_TEMPLATE[p] || ["Sols","Murs et plafonds","Fenêtres et volets","Électricité (prises, interrupteurs)"];
+    rooms[p] = {
+      note:'',
+      postes: postesNames.map(name=>({name, state:null, na:false, comment:''}))
+    };
+  });
+  const edl = {
+    id: uid(),
+    adresse,
+    etage: document.getElementById('f-etage').value.trim(),
+    type: document.getElementById('f-type').value,
+    date: document.getElementById('f-date').value,
+    heure: document.getElementById('f-heure').value,
+    bailleur: document.getElementById('f-bailleur').value.trim(),
+    locataire: document.getElementById('f-locataire').value.trim(),
+    chauffage: document.getElementById('f-chauffage').value,
+    cles: document.getElementById('f-cles').value,
+    compteurs: document.getElementById('f-compteurs').value.trim(),
+    rooms,
+    sign1:null, sign2:null,
+    finalized:false
+  };
+  DB.push(edl);
+  saveDB();
+  openDetail(edl.id);
+  toast('État des lieux créé');
+});
+
+document.getElementById('backFromDetail').addEventListener('click', ()=>{ renderHome(); showScreen('screen-home'); });
+document.getElementById('backFromSummary').addEventListener('click', ()=>showScreen('screen-detail'));
+
+document.getElementById('helpBtn').addEventListener('click', ()=>{
+  alert("Méthode conseillée :\\n\\n1. Remplissez les informations administratives.\\n2. Parcourez chaque pièce, onglet par onglet.\\n3. Pour chaque poste, choisissez l'état (Neuf / Bon / Usage / Mauvais) ou cochez 'Non concerné'.\\n4. Ajoutez un commentaire pour préciser un défaut (ex: emplacement exact).\\n5. Terminez par le récapitulatif et les signatures.\\n\\nAstuce : utilisez une formulation neutre et factuelle, et ne laissez jamais une case vide.");
+});
+
+/* ===================== DETAIL SCREEN ===================== */
+function openDetail(id){
+  currentId = id;
+  const edl = getCurrent();
+  currentRoom = Object.keys(edl.rooms)[0];
+  document.getElementById('detailAddr').textContent = edl.adresse;
+  document.getElementById('detailMeta').textContent = [edl.date, edl.etage].filter(Boolean).join(' · ');
+  renderTabs();
+  renderRoom();
+  showScreen('screen-detail');
+}
+
+function renderTabs(){
+  const edl = getCurrent();
+  const tabbar = document.getElementById('tabbar');
+  tabbar.innerHTML = '';
+  Object.keys(edl.rooms).forEach(r=>{
+    const room = edl.rooms[r];
+    const allDone = room.postes.every(p=>p.state || p.na);
+    const chip = document.createElement('button');
+    chip.className = 'tabchip' + (r===currentRoom ? ' active':'');
+    chip.innerHTML = `${escapeHtml(r)}<span class="dot" style="background:${allDone?'#6E7F5C':'#D3CABA'}"></span>`;
+    chip.addEventListener('click', ()=>{ currentRoom = r; renderTabs(); renderRoom(); });
+    tabbar.appendChild(chip);
+  });
+}
+
+function renderRoom(){
+  const edl = getCurrent();
+  const room = edl.rooms[currentRoom];
+  const wrap = document.getElementById('roomContent');
+  wrap.innerHTML = '';
+
+  const titleDiv = document.createElement('div');
+  titleDiv.className = 'room-title';
+  titleDiv.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> ${escapeHtml(currentRoom)}`;
+  wrap.appendChild(titleDiv);
+
+  const noteField = document.createElement('div');
+  noteField.className = 'room-note-field';
+  noteField.innerHTML = `<label>Remarque générale sur la pièce (optionnel)</label><textarea placeholder="Ex: pièce traversante, bien exposée...">${escapeHtml(room.note)}</textarea>`;
+  noteField.querySelector('textarea').addEventListener('input', e=>{ room.note = e.target.value; saveDB(); });
+  wrap.appendChild(noteField);
+
+  room.postes.forEach((poste, idx)=>{
+    const el = document.createElement('div');
+    el.className = 'poste';
+    const points = POSTE_POINTS[poste.name] || '';
+    el.innerHTML = `
+      <div class="poste-head">
+        <div>
+          <div class="poste-name">${escapeHtml(poste.name)}</div>
+          ${points ? `<div class="poste-points">${escapeHtml(points)}</div>` : ''}
+        </div>
+      </div>
+      <div class="state-row" data-idx="${idx}">
+        ${STATES.map(s=>`<button class="state-btn ${poste.state===s.key?'sel-'+s.key:''}" data-state="${s.key}">${s.label}</button>`).join('')}
+      </div>
+      <div class="poste-extra">
+        <button class="na-toggle ${poste.na?'on':''}" data-action="na">Non concerné</button>
+        <input class="poste-comment" type="text" placeholder="Commentaire / emplacement du défaut" value="${escapeHtml(poste.comment)}">
+      </div>
+    `;
+    el.querySelectorAll('.state-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const st = btn.dataset.state;
+        poste.state = (poste.state===st) ? null : st;
+        if(poste.state) poste.na = false;
+        saveDB();
+        renderRoom();
+        renderTabs();
+        updateProgressBar();
+      });
+    });
+    el.querySelector('.na-toggle').addEventListener('click', ()=>{
+      poste.na = !poste.na;
+      if(poste.na) poste.state = null;
+      saveDB();
+      renderRoom();
+      renderTabs();
+      updateProgressBar();
+    });
+    el.querySelector('.poste-comment').addEventListener('input', e=>{
+      poste.comment = e.target.value;
+      saveDB();
+    });
+    wrap.appendChild(el);
+  });
+
+  // bottom nav
+  const roomKeys = Object.keys(edl.rooms);
+  const ri = roomKeys.indexOf(currentRoom);
+  const nav = document.createElement('div');
+  nav.className = 'bottomnav';
+  const isLast = ri === roomKeys.length-1;
+  nav.innerHTML = `
+    <button class="bn-back" ${ri===0?'disabled style="opacity:.4"':''}>Pièce précédente</button>
+    <button class="${isLast?'bn-finish':'bn-next'}">${isLast? 'Voir le récapitulatif' : 'Pièce suivante'}</button>
+  `;
+  nav.children[0].addEventListener('click', ()=>{
+    if(ri>0){ currentRoom = roomKeys[ri-1]; renderTabs(); renderRoom(); }
+  });
+  nav.children[1].addEventListener('click', ()=>{
+    if(isLast){ openSummary(); }
+    else { currentRoom = roomKeys[ri+1]; renderTabs(); renderRoom(); }
+  });
+  wrap.appendChild(nav);
+
+  updateProgressBar();
+}
+
+function updateProgressBar(){
+  const edl = getCurrent();
+  const {done,total} = computeProgress(edl);
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressText').textContent = `${done} / ${total} postes`;
+  document.getElementById('progressPct').textContent = pct+'%';
+}
+
+/* ===================== SUMMARY ===================== */
+function openSummary(){
+  const edl = getCurrent();
+  const counts = {neuf:0,bon:0,usage:0,mauvais:0,na:0};
+  const naList = [];
+  Object.keys(edl.rooms).forEach(r=>{
+    edl.rooms[r].postes.forEach(p=>{
+      if(p.na){ counts.na++; }
+      else if(p.state){ counts[p.state]++; }
+    });
+  });
+  document.getElementById('summaryStats').innerHTML = `
+    <div class="sstat neuf"><div class="n">${counts.neuf}</div><div class="l">Neuf</div></div>
+    <div class="sstat bon"><div class="n">${counts.bon}</div><div class="l">Bon état</div></div>
+    <div class="sstat usage"><div class="n">${counts.usage}</div><div class="l">Usage</div></div>
+    <div class="sstat mauvais"><div class="n">${counts.mauvais}</div><div class="l">Mauvais</div></div>
+  `;
+  const {done,total} = computeProgress(edl);
+  document.getElementById('summaryNAlist').textContent = `${counts.na} poste(s) marqué(s) non concerné · ${done}/${total} postes renseignés au total`;
+  setupSignCanvas('sign1', edl.sign1);
+  setupSignCanvas('sign2', edl.sign2);
+  showScreen('screen-summary');
+}
+
+document.getElementById('finalizeBtn').addEventListener('click', ()=>{
+  const edl = getCurrent();
+  const {done,total} = computeProgress(edl);
+  if(done<total){
+    if(!confirm(`${total-done} poste(s) ne sont pas encore renseignés. Terminer quand même ?`)) return;
+  }
+  edl.finalized = true;
+  saveDB();
+  toast('État des lieux enregistré');
+  renderHome();
+  showScreen('screen-home');
+});
+
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const edl = getCurrent();
+  let txt = `ÉTAT DES LIEUX D'ENTRÉE\\n`;
+  txt += `Adresse : ${edl.adresse} ${edl.etage?'('+edl.etage+')':''}\\n`;
+  txt += `Type de bien : ${edl.type}\\n`;
+  txt += `Date / heure : ${edl.date} ${edl.heure}\\n`;
+  txt += `Bailleur / mandataire : ${edl.bailleur}\\n`;
+  txt += `Locataire(s) : ${edl.locataire}\\n`;
+  txt += `Chauffage : ${edl.chauffage}\\n`;
+  txt += `Clés remises : ${edl.cles}\\n`;
+  txt += `Relevés compteurs : ${edl.compteurs}\\n\\n`;
+  Object.keys(edl.rooms).forEach(r=>{
+    const room = edl.rooms[r];
+    txt += `--- ${r.toUpperCase()} ---\\n`;
+    if(room.note) txt += `Remarque : ${room.note}\\n`;
+    room.postes.forEach(p=>{
+      const stateLabel = p.na ? 'Non concerné' : (STATES.find(s=>s.key===p.state)?.label || 'Non renseigné');
+      txt += `• ${p.name} : ${stateLabel}${p.comment? ' — '+p.comment : ''}\\n`;
+    });
+    txt += `\\n`;
+  });
+  navigator.clipboard.writeText(txt).then(()=>{
+    toast('Texte copié dans le presse-papier');
+  }).catch(()=>{
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = txt;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('Texte copié dans le presse-papier');
+  });
+});
+
+/* ===================== SIGNATURE CANVAS ===================== */
+const signStates = {};
+function setupSignCanvas(id, savedData){
+  const canvas = document.getElementById(id);
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  ctx.strokeStyle = '#2B2620';
+  ctx.lineWidth = 2.2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  let drawing = false, lastX=0, lastY=0;
+
+  if(savedData){
+    const img = new Image();
+    img.onload = ()=> ctx.drawImage(img,0,0, rect.width, rect.height);
+    img.src = savedData;
+  }
+
+  function pos(e){
+    const r = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return {x: t.clientX-r.left, y: t.clientY-r.top};
+  }
+  function start(e){ e.preventDefault(); drawing=true; const p=pos(e); lastX=p.x; lastY=p.y; }
+  function move(e){
+    if(!drawing) return;
+    e.preventDefault();
+    const p = pos(e);
+    ctx.beginPath();
+    ctx.moveTo(lastX,lastY);
+    ctx.lineTo(p.x,p.y);
+    ctx.stroke();
+    lastX=p.x; lastY=p.y;
+  }
+  function end(){
+    if(!drawing) return;
+    drawing=false;
+    const edl = getCurrent();
+    edl[id] = canvas.toDataURL();
+    saveDB();
+  }
+  canvas.addEventListener('touchstart', start, {passive:false});
+  canvas.addEventListener('touchmove', move, {passive:false});
+  canvas.addEventListener('touchend', end);
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+}
+document.querySelectorAll('.sign-clear').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const id = btn.dataset.target;
+    const canvas = document.getElementById(id);
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const edl = getCurrent();
+    edl[id] = null;
+    saveDB();
+  });
+});
+
+/* ===================== INSTALL HINT (Safari iOS, not standalone) ===================== */
+(function(){
+  const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  if(isIos && !isStandalone){
+    document.getElementById('installHint').classList.add('show');
+  }
+})();
+
+/* ===================== INIT ===================== */
+renderHome();
+
+/* ===================== SERVICE WORKER (offline) ===================== */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
