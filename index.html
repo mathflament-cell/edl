@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>EDL Expert</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="EDL Expert">
+<meta name="theme-color" content="#FAF8F3">
+<style>
+:root{
+  --ink:#2B2620;--ink2:#6B6258;--ink3:#A39A8C;
+  --bg:#FAF8F3;--card:#FFFFFF;--line:#E6E0D4;--line2:#D3CABA;
+  --clay:#B5623C;--clay2:#F1DDD2;--clay3:#7A3F26;
+  --sage:#6E7F5C;--sage2:#E2E8D8;--sage3:#42502F;
+  --amber:#C08A2E;--amber2:#F2E3C4;--amber3:#7A5715;
+  --red:#A8453A;--red2:#F2D9D5;--red3:#6E261D;
+  --blue:#3A6FA8;--blue2:#D8E7F5;--blue3:#1E3F64;
+  --r:14px;--rs:9px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+html,body{min-height:100dvh;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);overflow-x:hidden;}
+button,input,select,textarea{font-family:inherit;font-size:inherit;}
+button{cursor:pointer;}
+
+#app{max-width:860px;margin:0 auto;padding:0 16px 120px;}
+
+/* TOPBAR */
+.tb{position:sticky;top:0;z-index:50;background:var(--bg);padding:12px 0 10px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+.tb-brand{display:flex;align-items:center;gap:9px;}
+.tb-logo{width:31px;height:31px;border-radius:8px;background:var(--clay);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;}
+.tb-logo svg{width:16px;height:16px;}
+.tb-t1{font-size:14px;font-weight:700;}
+.tb-t2{font-size:11px;color:var(--ink2);}
+.tb-btn{width:35px;height:35px;border-radius:50%;border:1px solid var(--line2);background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--ink2);}
+.tb-btn svg{width:16px;height:16px;}
+
+/* SCREENS */
+.scr{display:none;}
+.scr.on{display:block;animation:fi .2s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* ─── HOME ─── */
+.hero{padding:18px 0 4px;}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--clay3);font-weight:700;margin-bottom:4px;}
+.hero h1{font-size:22px;font-weight:700;letter-spacing:-.02em;}
+.hero p{color:var(--ink2);font-size:13.5px;margin-top:5px;line-height:1.55;}
+.type-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;}
+.tc{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:15px 13px;display:flex;flex-direction:column;gap:7px;text-align:left;}
+.tc-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.tc-icon svg{width:17px;height:17px;}
+.tc.e .tc-icon{background:var(--sage2);color:var(--sage3);}
+.tc.s .tc-icon{background:var(--clay2);color:var(--clay3);}
+.tc-lbl{font-size:14px;font-weight:700;}
+.tc-sub{font-size:11.5px;color:var(--ink2);line-height:1.4;}
+.sl{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);font-weight:700;margin:18px 0 8px;}
+.ec{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.ec-pin{width:5px;align-self:stretch;border-radius:4px;flex-shrink:0;}
+.ec.e .ec-pin{background:var(--sage);}
+.ec.s .ec-pin{background:var(--clay);}
+.ec.p .ec-pin{background:var(--amber);}
+.ec-body{flex:1;min-width:0;}
+.ec-addr{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ec-meta{font-size:11.5px;color:var(--ink2);margin-top:2px;}
+.ec-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0;}
+.eb-e{background:var(--sage2);color:var(--sage3);}
+.eb-s{background:var(--clay2);color:var(--clay3);}
+.ec-pct{font-size:12px;font-weight:700;color:var(--ink2);flex-shrink:0;}
+.empty{text-align:center;padding:36px 16px;color:var(--ink3);font-size:13.5px;line-height:1.6;}
+.install{display:none;background:var(--clay2);border-radius:var(--rs);padding:11px 13px;font-size:13px;color:var(--clay3);margin:10px 0;line-height:1.5;}
+.install.on{display:block;}
+
+/* ─── FORM ─── */
+.fhd{padding:14px 0 4px;}
+.back{display:inline-flex;align-items:center;gap:5px;color:var(--ink2);font-size:13px;font-weight:600;background:none;border:none;padding:0;margin-bottom:11px;}
+.back svg{width:14px;height:14px;}
+.fhd h1{font-size:19px;font-weight:700;letter-spacing:-.02em;}
+.fhd .sub{font-size:12.5px;color:var(--ink2);margin-top:3px;line-height:1.5;}
+.ibox{border-radius:var(--rs);padding:10px 12px;font-size:12.5px;line-height:1.55;margin-bottom:12px;}
+.ibox.blue{background:var(--blue2);color:var(--blue3);}
+.ibox.amber{background:var(--amber2);color:var(--amber3);}
+.field{margin-bottom:13px;}
+.field label{display:block;font-size:11.5px;font-weight:700;color:var(--ink2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line2);border-radius:var(--rs);background:var(--card);padding:10px 11px;font-size:14.5px;color:var(--ink);}
+.field textarea{resize:vertical;min-height:56px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-p{width:100%;background:var(--clay);color:#fff;border:none;border-radius:var(--r);padding:14px;font-size:15px;font-weight:700;margin-top:4px;}
+.btn-s{width:100%;background:transparent;color:var(--ink2);border:1px solid var(--line2);border-radius:var(--r);padding:12px;font-size:14px;font-weight:600;margin-top:8px;}
+.btn-d{width:100%;background:var(--red2);color:var(--red3);border:1px solid var(--red);border-radius:var(--r);padding:12px;font-size:14px;font-weight:600;margin-top:8px;}
+
+/* ─── DETAIL ─── */
+.dhd{padding:14px 0 4px;}
+.dhd h1{font-size:19px;font-weight:700;}
+.dhd .sub{font-size:12px;color:var(--ink2);margin-top:3px;}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;margin-bottom:7px;}
+.pill.e{background:var(--sage2);color:var(--sage3);}
+.pill.s{background:var(--clay2);color:var(--clay3);}
+.prog-wrap{margin:11px 0 4px;}
+.prog-bar{height:5px;background:var(--line);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--sage);border-radius:4px;transition:width .3s;}
+.prog-fill.s{background:var(--clay);}
+.prog-row{display:flex;justify-content:space-between;font-size:11px;color:var(--ink2);margin-top:4px;}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:11px 0 3px;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.chip{flex-shrink:0;padding:7px 12px;border-radius:20px;border:1px solid var(--line2);background:var(--card);font-size:13px;font-weight:600;color:var(--ink2);white-space:nowrap;}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+.chip-dot{display:inline-block;width:5px;height:5px;border-radius:50%;margin-left:5px;vertical-align:middle;background:var(--line2);}
+.chip-dot.ok{background:var(--sage);}
+.chip.on .chip-dot{background:#9FD18A;}
+
+/* POSTE */
+.rtitle{font-size:17px;font-weight:700;margin:15px 0 3px;display:flex;align-items:center;gap:7px;}
+.rtitle svg{width:19px;height:19px;color:var(--clay);flex-shrink:0;}
+.rnote-wrap{margin-bottom:11px;}
+.rnote-wrap label{font-size:11px;color:var(--ink3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:3px;}
+.rnote-wrap textarea{width:100%;border:1px solid var(--line);border-radius:var(--rs);padding:8px 10px;font-size:13.5px;min-height:42px;background:var(--card);}
+.corps-lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);font-weight:700;margin:14px 0 6px;border-top:1px solid var(--line);padding-top:9px;}
+.vocab-btn{font-size:11px;color:var(--blue3);background:var(--blue2);border:none;border-radius:6px;padding:3px 8px;margin-top:4px;font-weight:600;}
+.poste{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 13px;margin-bottom:8px;}
+.pname{font-size:13.5px;font-weight:700;margin-bottom:1px;}
+.phint{font-size:11px;color:var(--ink3);line-height:1.5;margin-bottom:9px;}
+.state-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:9px;}
+.sb{border:1px solid var(--line2);background:var(--bg);border-radius:7px;padding:7px 3px;font-size:10.5px;font-weight:700;color:var(--ink2);text-align:center;line-height:1.3;}
+.sb.sn{background:#E8F4E8;border-color:#6E7F5C;color:#2E4A1E;}
+.sb.sr{background:#D6EDD6;border-color:#5A7550;color:#2A4A1E;}
+.sb.st{background:var(--amber2);border-color:var(--amber);color:var(--amber3);}
+.sb.sd{background:#FFE4B8;border-color:#D4901A;color:#7A5715;}
+.sb.su{background:#FFD4A8;border-color:#C07828;color:#6E3A0A;}
+.sb.sa{background:var(--red2);border-color:var(--red);color:var(--red3);}
+.pfoot{display:flex;gap:7px;align-items:center;}
+.na-btn{flex-shrink:0;font-size:11px;font-weight:700;color:var(--ink3);border:1px solid var(--line2);border-radius:7px;padding:7px 9px;background:var(--bg);}
+.na-btn.on{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+.pc{flex:1;border:1px solid var(--line);border-radius:7px;padding:7px 10px;font-size:13px;background:var(--bg);}
+/* SORTIE extras */
+.drow{display:flex;gap:7px;align-items:center;margin-top:7px;}
+.dlbl{font-size:11.5px;color:var(--ink2);font-weight:600;flex-shrink:0;}
+.dinput{flex:1;border:1px solid var(--line);border-radius:7px;padding:7px 10px;font-size:13px;background:var(--bg);}
+.dunit{font-size:11.5px;color:var(--ink2);flex-shrink:0;}
+.ichk{display:flex;align-items:center;gap:7px;margin-top:7px;font-size:12.5px;color:var(--ink2);}
+.ichk input{width:17px;height:17px;accent-color:var(--clay);}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--card);border-top:1px solid var(--line);padding:9px 16px calc(9px + env(safe-area-inset-bottom));display:flex;gap:9px;max-width:860px;margin:0 auto;}
+.bn-b{flex:1;background:var(--bg);border:1px solid var(--line2);border-radius:var(--rs);padding:11px;font-size:13px;font-weight:700;color:var(--ink2);}
+.bn-n{flex:2;background:var(--clay);color:#fff;border:none;border-radius:var(--rs);padding:11px;font-size:13px;font-weight:700;}
+.bn-f{flex:2;background:var(--sage);color:#fff;border:none;border-radius:var(--rs);padding:11px;font-size:13px;font-weight:700;}
+
+/* SUMMARY */
+.ss{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px;margin-bottom:11px;}
+.ss h3{font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:11px;text-transform:uppercase;letter-spacing:.04em;}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.sc{border-radius:8px;padding:9px 5px;text-align:center;}
+.sc .n{font-size:19px;font-weight:700;}
+.sc .l{font-size:10px;color:var(--ink2);margin-top:1px;line-height:1.3;}
+.sc1{background:#E8F4E8;} .sc1 .n{color:#2E4A1E;}
+.sc2{background:var(--amber2);} .sc2 .n{color:var(--amber3);}
+.sc3{background:var(--red2);} .sc3 .n{color:var(--red3);}
+.dline{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--line);font-size:12.5px;}
+.dline:last-child{border:none;}
+.dline .dr{color:var(--ink2);font-size:11px;}
+.dline .dm{font-weight:700;color:var(--red3);}
+.dtotal{display:flex;justify-content:space-between;align-items:center;padding:9px 0 0;font-size:14px;font-weight:700;}
+.dtotal .amt{color:var(--red3);font-size:17px;}
+.signbox{border:1.5px dashed var(--line2);border-radius:var(--r);height:125px;margin-top:7px;touch-action:none;background:var(--card);}
+.signbox canvas{width:100%;height:100%;border-radius:var(--r);}
+.sign-clear{font-size:11.5px;color:var(--clay3);margin-top:4px;background:none;border:none;padding:0;font-weight:700;}
+.delbox{background:var(--blue2);border-radius:var(--rs);padding:10px 12px;font-size:12px;color:var(--blue3);line-height:1.6;margin-bottom:11px;}
+.delbox b{font-weight:700;}
+
+/* MODAL VOCAB */
+.vmodal{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.45);}
+.vmodal.on{display:flex;align-items:flex-end;}
+.vinner{background:var(--card);border-radius:var(--r) var(--r) 0 0;padding:18px 16px 36px;max-height:72vh;overflow-y:auto;width:100%;max-width:860px;margin:0 auto;}
+.vinner h3{font-size:14px;font-weight:700;margin-bottom:11px;}
+.vi{padding:5px 0;border-bottom:1px solid var(--line);font-size:12.5px;line-height:1.5;}
+.vi:last-child{border:none;}
+.vi b{font-weight:700;}
+.vclose{width:100%;background:var(--ink);color:var(--bg);border:none;border-radius:var(--rs);padding:11px;font-size:14px;font-weight:700;margin-top:12px;}
+.toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 17px;border-radius:30px;font-size:12.5px;font-weight:600;z-index:300;opacity:0;pointer-events:none;transition:opacity .25s;white-space:nowrap;}
+.toast.on{opacity:1;}
+
+/* SÉLECTEUR DE MODULES */
+.mod-selector{margin:10px 0 14px;padding:11px 13px;background:var(--blue2);border-radius:var(--rs);}
+.mod-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--blue3);margin-bottom:7px;}
+.mod-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.mod-chip{padding:6px 11px;border-radius:20px;border:1.5px solid var(--blue3);background:transparent;font-size:12px;font-weight:600;color:var(--blue3);opacity:.55;}
+.mod-chip.active{background:var(--blue3);color:#fff;opacity:1;}
+
+/* BOUTON AJOUT DYNAMIQUE */
+.add-dynamic-btn{
+  display:block;width:100%;margin:4px 0 12px;padding:10px;
+  border:1.5px dashed var(--clay);border-radius:var(--r);
+  background:var(--clay2);color:var(--clay3);font-size:13px;font-weight:700;
+  text-align:center;
+}
+
+/* OPTS — cases à cocher par groupe */
+.opts-group{margin-bottom:10px;}
+.opts-group-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink2);margin-bottom:5px;display:block;}
+.opts-chips{display:flex;flex-wrap:wrap;gap:5px;}
+.opt-chip{
+  padding:6px 11px;border-radius:20px;border:1px solid var(--line2);
+  background:var(--bg);font-size:12px;font-weight:600;color:var(--ink2);
+  white-space:nowrap;cursor:pointer;transition:all .12s;
+}
+.opt-chip.on{background:var(--clay);border-color:var(--clay);color:#fff;}
+.opt-chip.on-sage{background:var(--sage);border-color:var(--sage);color:#fff;}
+.opt-chip.on-amber{background:var(--amber);border-color:var(--amber);color:#fff;}
+.opts-separator{height:1px;background:var(--line);margin:10px 0;}
+
+/* TYPE CHECKBOX */
+.type-chk-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
+.type-chk{display:block;cursor:pointer;}
+.type-chk input[type=radio]{display:none;}
+.type-chk-box{display:flex;align-items:center;gap:9px;padding:13px 12px;border:1.5px solid var(--line2);border-radius:var(--r);background:var(--card);font-size:13.5px;font-weight:600;color:var(--ink2);transition:border-color .15s,background .15s;}
+.type-chk-box svg{width:17px;height:17px;flex-shrink:0;}
+.type-chk input:checked + .type-chk-box{border-color:var(--clay);background:var(--clay2);color:var(--clay3);}
+.type-chk:first-child input:checked + .type-chk-box{border-color:var(--sage);background:var(--sage2);color:var(--sage3);}
+
+/* CPT SECTION LABEL */
+.cpt-section-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);margin-bottom:5px;padding:6px 0 3px;border-top:1px solid var(--line);}
+.cpt-section-lbl:first-child{border-top:none;padding-top:0;}
+
+/* TABLE */
+table.cpt{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;}
+table.cpt th{background:var(--bg);padding:6px 8px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink2);border-bottom:1px solid var(--line2);}
+table.cpt td{padding:7px 8px;border-bottom:1px solid var(--line);}
+table.cpt tr:last-child td{border:none;}
+table.cpt input{width:100%;border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:13px;background:var(--bg);}
+</style>
+</head>
+<body>
+<div id="app">
+
+<div class="tb">
+  <div class="tb-brand">
+    <div class="tb-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></div>
+    <div><div class="tb-t1">EDL Expert</div><div class="tb-t2">État des lieux professionnel</div></div>
+  </div>
+  <button class="tb-btn" id="helpBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+</div>
+
+<!-- HOME -->
+<div class="scr on" id="sc-home">
+  <div class="hero">
+    <div class="eyebrow">Bienvenue</div>
+    <h1>Vos états des lieux</h1>
+    <p>Entrée ou sortie : créez un dossier, visitez pièce par pièce, signez et exportez le procès-verbal complet.</p>
+  </div>
+  <div class="install" id="installHint"><b>Astuce iPad :</b> appuyez sur le bouton de partage ⬆️ dans Safari, puis "Sur l'écran d'accueil" pour l'utiliser comme une vraie app.</div>
+  <div class="type-row">
+    <button class="tc e" id="btnE">
+      <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><path d="M21 3L9 15"/><path d="M10 3H3v18h18v-7"/></svg></div>
+      <div class="tc-lbl">Entrée</div>
+      <div class="tc-sub">Locataire entrant — procès-verbal d'entrée</div>
+    </button>
+    <button class="tc s" id="btnS">
+      <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 21 3 21 3 15"/><path d="M3 21L15 9"/><path d="M14 3h7v6"/></svg></div>
+      <div class="tc-lbl">Sortie</div>
+      <div class="tc-sub">Locataire sortant — chiffrage et indemnité</div>
+    </button>
+  </div>
+  <div class="sl">Historique</div>
+  <div id="edlList"></div>
+</div>
+
+<!-- FORM -->
+<div class="scr" id="sc-form">
+  <div class="fhd">
+    <button class="back" id="backForm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Annuler</button>
+    <h1 id="ftitle">Informations</h1>
+    <div class="sub" id="fsub"></div>
+  </div>
+  <div class="ibox blue" id="iboxE"><b>Entrée :</b> À faire dans le 1er mois d'occupation. Le locataire a 7 jours pour signaler tout problème de plomberie/électricité, et 30 jours dès réception du rapport pour ses remarques. Envoyez les compteurs par mail le jour des constatations.</div>
+  <div class="ibox amber" id="iboxS" style="display:none"><b>Sortie :</b> Relevez les attestations d'entretien (chaudière dans les 6 mois). Comparez avec l'ELE. Peintures amorties sur 6 ans. Discutez le chiffrage avec les parties avant signature.</div>
+
+  <div class="field">
+    <label>Type d'état des lieux</label>
+    <div class="type-chk-row">
+      <label class="type-chk" id="lbl-entree">
+        <input type="radio" name="edl-type" id="chk-entree" value="entree" checked>
+        <span class="type-chk-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><path d="M21 3L9 15"/><path d="M10 3H3v18h18v-7"/></svg>
+          État des lieux d'entrée
+        </span>
+      </label>
+      <label class="type-chk" id="lbl-sortie">
+        <input type="radio" name="edl-type" id="chk-sortie" value="sortie">
+        <span class="type-chk-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 21 3 21 3 15"/><path d="M3 21L15 9"/><path d="M14 3h7v6"/></svg>
+          État des lieux de sortie
+        </span>
+      </label>
+    </div>
+  </div>
+
+  <div class="field"><label>Adresse complète du bien</label><input id="f-adr" placeholder="Rue, numéro, code postal, ville"></div>
+  <div class="frow">
+    <div class="field"><label>Étage / porte</label><input id="f-etg" placeholder="ex: 1er étage gauche"></div>
+    <div class="field"><label>Type de bien</label><select id="f-typ"><option>Appartement</option><option>Maison</option><option>Studio</option><option>Duplex</option><option>Local commercial</option></select></div>
+  </div>
+  <div class="frow">
+    <div class="field"><label>Date</label><input type="date" id="f-dat"></div>
+    <div class="field"><label>Heure</label><input type="time" id="f-hre"></div>
+  </div>
+  <div class="field"><label>Propriétaire / bailleur / mandataire</label><input id="f-prp" placeholder="Nom, prénom — domicilié à..."></div>
+  <div class="field"><label>Locataire(s) entrant(s)</label><input id="f-loc" placeholder="Nom, prénom — faisant élection de domicile dans les lieux"></div>
+  <div class="field"><label>E-mail des parties (envoi rapport + compteurs)</label><input id="f-eml" placeholder="proprio@mail.com ; locataire@mail.com"></div>
+  <div class="frow">
+    <div class="field"><label>Durée du bail</label><input id="f-dur" placeholder="3 ans prenant cours le..."></div>
+    <div class="field"><label>Chauffage</label><select id="f-cha"><option>Individuel gaz</option><option>Individuel mazout</option><option>Individuel électrique</option><option>Collectif</option><option>Pompe à chaleur</option></select></div>
+  </div>
+
+  <div class="field">
+    <label>Compteurs et calorimètres — tous relevés dans cet onglet</label>
+    <div class="cpt-section-lbl">Compteurs généraux</div>
+    <table class="cpt" id="cptTable">
+      <thead><tr><th>Compteur</th><th>N° de compteur</th><th>Index</th><th>Unité</th></tr></thead>
+      <tbody>
+        <tr><td>Eau froide générale</td><td><input placeholder="ex: KE2080630"></td><td><input type="number" placeholder="0"></td><td>m³</td></tr>
+        <tr><td>Eau chaude</td><td><input placeholder="si compteur séparé"></td><td><input type="number" placeholder="0"></td><td>m³</td></tr>
+        <tr><td>Électricité — jour</td><td><input placeholder="ex: 34149202"></td><td><input type="number" placeholder="0"></td><td>kWh</td></tr>
+        <tr><td>Électricité — nuit</td><td><input placeholder="même compteur ou séparé"></td><td><input type="number" placeholder="0"></td><td>kWh</td></tr>
+        <tr><td>Gaz</td><td><input placeholder="n° compteur gaz"></td><td><input type="number" placeholder="0"></td><td>m³</td></tr>
+        <tr><td>Mazout — jauge</td><td><input placeholder="n° citerne si applicable"></td><td><input placeholder="plein / 3/4 / 1/2 / vide"></td><td></td></tr>
+      </tbody>
+    </table>
+    <div class="cpt-section-lbl" style="margin-top:14px">Calorimètres (radiateurs — chauffage collectif)</div>
+    <table class="cpt" id="caloTable">
+      <thead><tr><th>Pièce</th><th>N° calorimètre</th><th>Index 1</th><th>Index 2</th></tr></thead>
+      <tbody>
+        <tr><td><input placeholder="ex: Séjour"></td><td><input placeholder="ex: 8497"></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0"></td></tr>
+        <tr><td><input placeholder="ex: Chambre 1"></td><td><input></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0"></td></tr>
+        <tr><td><input placeholder="ex: Séjour (radiateur droit)"></td><td><input></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0"></td></tr>
+        <tr><td><input placeholder="ex: Salle de bains"></td><td><input></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0"></td></tr>
+        <tr><td><input placeholder="Pièce supplémentaire..."></td><td><input></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0"></td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--ink3);margin-top:6px;">Les calorimètres Techem ou similaires sont relevés pièce par pièce sur le radiateur.</div>
+  </div>
+
+  <div class="field">
+    <label>Remise des clés et accès</label>
+    <table class="cpt" id="cleTable">
+      <thead><tr><th>Type de clé / accès</th><th>Marque / modèle / n°</th><th>Quantité</th></tr></thead>
+      <tbody>
+        <tr><td>Immeuble (porte principale)</td><td><input placeholder="ex: Yale, n°..."></td><td><input type="number" min="0" placeholder="0" style="width:60px"></td></tr>
+        <tr><td>Appartement</td><td><input placeholder="ex: Vachette, n°..."></td><td><input type="number" min="0" placeholder="0" style="width:60px"></td></tr>
+        <tr><td>Cave</td><td><input placeholder="ex: simple, n°..."></td><td><input type="number" min="0" placeholder="0" style="width:60px"></td></tr>
+        <tr><td>Garage / parking</td><td><input placeholder="ex: télécommande, n°..."></td><td><input type="number" min="0" placeholder="0" style="width:60px"></td></tr>
+        <tr><td>Chambre</td><td><input placeholder="ex: clé à gorge"></td><td><input type="number" min="0" placeholder="0" style="width:60px"></td></tr>
+        <tr><td>Boîte aux lettres</td><td><input placeholder="ex: n°..."></td><td><input type="number" min="0" placeholder="0" style="width:60px"></td></tr>
+        <tr><td>Badge / digicode</td><td><input placeholder="ex: badge RFID, code..."></td><td><input type="number" min="0" placeholder="0" style="width:60px"></td></tr>
+        <tr><td>Portail / portillon</td><td><input placeholder="ex: télécommande Somfy"></td><td><input type="number" min="0" placeholder="0" style="width:60px"></td></tr>
+        <tr><td>Autre</td><td><input placeholder="Précisez..."></td><td><input type="number" min="0" placeholder="0" style="width:60px"></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="field"><label>Cave / parking (n°)</label><input id="f-cave" placeholder="Cave n°... Emplacement parking n°..."></div>
+
+  <div class="field"><label>Année de la dernière peinture</label><input id="f-pei" type="number" placeholder="ex: 2022 — calcul vétusté sur 6 ans"></div>
+  <div class="field"><label>Entretiens (chaudière, adoucisseur, ramonage, alarme...)</label><textarea id="f-ent" placeholder="Chaudière : dernière révision le ...&#10;VMC simple flux / double flux : entretien le ...&#10;Adoucisseur : ...&#10;Ramonage : ...&#10;Alarme : ...&#10;Ascenseur : ..."></textarea></div>
+  <div class="field" id="f-ele-wrap"><label>Référence ELE (état des lieux d'entrée) — sortie uniquement</label><input id="f-ele" placeholder="Date ou n° du rapport d'entrée"></div>
+  <div class="field"><label>Remarques générales (pré-remplissage rapport)</label><textarea id="f-rmq" rows="4" placeholder="Le logement est trouvé en excellent état d'entretien et de propreté. Les lieux sont inoccupés et non encombrés lors de notre passage.&#10;Les parties sont présentes lors de notre constat."></textarea></div>
+  <div class="field"><label>Pièces à expertiser (une par ligne)</label>
+    <textarea id="f-pcs" rows="10">Salle de bains
+Dégagement
+Chambre
+Séjour / Cuisine ouverte
+WC séparé
+Cave
+Terrasse / Balcon</textarea>
+  </div>
+  <button class="btn-p" id="createBtn">Créer et démarrer la visite</button>
+  <button class="btn-s" id="cancelFormBtn">Annuler</button>
+</div>
+
+<!-- DETAIL -->
+<div class="scr" id="sc-detail">
+  <div class="dhd">
+    <button class="back" id="backDetail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Liste</button>
+    <div class="pill" id="dpill">Entrée</div>
+    <h1 id="daddr"></h1>
+    <div class="sub" id="dmeta"></div>
+    <div class="prog-wrap">
+      <div class="prog-bar"><div class="prog-fill" id="pfill" style="width:0%"></div></div>
+      <div class="prog-row"><span id="ptxt">0/0</span><span id="ppct">0%</span></div>
+    </div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div id="roomContent"></div>
+</div>
+
+<!-- SUMMARY -->
+<div class="scr" id="sc-summary">
+  <div class="fhd">
+    <button class="back" id="backSum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Retour à la visite</button>
+    <h1>Récapitulatif</h1>
+    <div class="sub">Vérifiez avant de faire signer</div>
+  </div>
+  <div class="delbox" id="delbox"></div>
+  <div class="ss"><h3>Bilan des états</h3><div class="sgrid" id="sgrid"></div></div>
+  <div class="ss" id="dsec" style="display:none">
+    <h3>Chiffrage — sortie</h3>
+    <div id="dlist"></div>
+    <div class="dtotal"><span>Indemnité compensatoire totale</span><span class="amt" id="dtot">0 €</span></div>
+  </div>
+  <div class="ss"><h3>Signature du propriétaire / mandataire</h3><div class="signbox"><canvas id="sign1"></canvas></div><button class="sign-clear" data-t="sign1">Effacer</button></div>
+  <div class="ss"><h3>Signature du locataire</h3><div class="signbox"><canvas id="sign2"></canvas></div><button class="sign-clear" data-t="sign2">Effacer</button></div>
+  <button class="btn-p" id="finalBtn">Marquer comme terminé</button>
+  <button class="btn-s" id="exportBtn">Exporter le procès-verbal (copier)</button>
+  <button class="btn-d" id="deleteBtn">Supprimer cet état des lieux</button>
+</div>
+</div>
+
+<!-- VOCAB MODAL -->
+<div class="vmodal" id="vmodal">
+  <div class="vinner">
+    <h3 id="vtitle">Vocabulaire</h3>
+    <div id="vcontent"></div>
+    <button class="vclose" id="vclose">Fermer</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================
+   VOCABULAIRE PROFESSIONNEL
+   ===================================================== */
+const VOC = {
+  "Plafonds":[ ["Faux-plafond","Plafond suspendu (tendu = cher, suspendu = moins cher). L'espace au-dessus = plénum."],["Rosace","Ornement circulaire en plâtre au centre du plafond — autour du point lumineux"],["Moulures","Ornements en relief en périphérie du plafond"],["Ragréage / trace de ragréage","Réparation localisée visible sous la peinture"],["Hourdis de béton","Plafond brut en béton, non peint"],["Microfissuration","Fissure très fine, capillaire, d'ordre structurel — non imputable au locataire"] ],
+  "Murs":[ ["Enduit","Couche de finition appliquée sur la maçonnerie avant peinture"],["Arête vive / saillante","Angle sortant d'un mur, sujet aux impacts"],["Allège","Partie de mur sous le rebord d'une fenêtre"],["Tasso","Bosse ou renflement de l'enduit"],["Aspérités","Irrégularités de surface de l'enduit"],["Boursouflure","Décollement de l'enduit ou de la peinture, formant une bosse"],["Lambris de carrelage","Carrelage sur une partie seulement du mur"],["Liserée / listel / frise","Bande décorative sur carrelage"] ],
+  "Plinthes":[ ["Plinthe","Bande en bois ou PVC en bas des murs, entre sol et mur"],["Contre-plinthe","Petite moulure placée au-dessus de la plinthe"],["Arrêt de porte / butoir","Stoppe la porte pour éviter qu'elle heurte la plinthe — son absence est à noter"] ],
+  "Sols":[ ["Aire de foulée","Zone de passage principale au sol, la plus exposée à l'usure"],["Stratifié / laminé","Type Quickstep — feuille supérieure imitant le bois, différent du massif"],["Parquet massif","Chêne, noyer — planche pleine de bois"],["Parquet semi-massif","Couches collées avec face en bois noble"],["Parquet à bâtons rompus","Motif de pose en chevrons cassés"],["Vitrification","Finition brillante ou matte sur parquet"],["Disjoint","Espace entre deux lattes"],["Grès-cérame","Carrelage très résistant, souvent imitation pierre"],["Tomette","Carrelage hexagonal en terre cuite"] ],
+  "Menuiseries extérieures":[ ["Châssis","Cadre de fenêtre (PVC, bois, alu)"],["Châssis condamné","Châssis fixe, non ouvrant"],["Dormant / ouvrant","Partie fixe / partie mobile du châssis"],["Chambre de décompression","Espace entre les deux vitrages d'un double vitrage — se salit avec le temps"],["Parclose","Joint entre le vitrage et le châssis"],["Tablette de fenêtre","Appui de fenêtre (pierre bleue, naturelle, composite)"],["Épaufrure","Éclat ou entaille sur une arête (tablette, pierre)"],["Oscillo-battant","Châssis s'ouvrant en bascule (aération) ou en battant (grand ouvert)"],["Imposte","Vitrage fixe au-dessus d'une porte ou châssis"],["Détecteur d'ouverture","Alarme sur châssis — réputé fonctionnel si visible et non endommagé"],["Béquille","Poignée du châssis"] ],
+  "Menuiseries intérieures":[ ["Huisserie","Ensemble de chambranle + ébrasement encadrant une porte"],["Chambranle","Moulure encadrant la porte côté visible"],["Ébrasement","Épaisseur du mur dans l'encadrement de la porte"],["Paumelle","Charnière de porte"],["Cache-paumelle","Cache décoratif sur la charnière"],["Porte isoplane","Porte à surface lisse"],["Porte à galandage","Porte coulissante disparaissant dans le mur"],["Chant de la porte","Tranche latérale visible"],["Balai de porte","Joint-brosse sous la porte (coupe-vent)"],["Poinçons","Petits enfoncements sur la surface de la porte"],["Béquille","Poignée de porte — peut être tubulaire, à pompe, rectangulaire"],["Plaquette de propreté","Entourage décoratif autour de la serrure"],["Mauclair","Joint de mastic entre la porte et son cadre"] ],
+  "Électricité":[ ["Schéma unifilaire","Plan électrique du tableau — doit être présent dans le coffret"],["Plaquettes de propreté","Cache des interrupteurs et prises — marque Niko fréquente"],["Prise IPPS","Prise étanche (ex. Niko), pour pièces humides"],["Prise data","Prise réseau internet"],["Goulotte","Cache plastique pour câbles en saillie"],["Câbles en attente avec sucre","Fils non raccordés, terminés par un connecteur"],["Interrupteur domotique","Interrupteur connecté (lumières, volets, prises)"],["Attestation de conformité","Document certifiant la conformité — à mentionner si absent"] ],
+  "Chauffage / ventilation":[ ["Radiateur à tôle emboutie","Radiateur plat type Radson, Henrad"],["Radiateur en fonte","Radiateur d'époque, très lourd"],["Vanne thermostatique","Robinet de réglage en tête de radiateur"],["Calorimètre","Compteur de chaleur sur le radiateur — à relever pièce par pièce"],["VMC","Ventilation mécanique contrôlée — grille à vérifier"],["Ouïe de ventilation","Grille d'aération — parfois couplée à l'éclairage"] ],
+  "Sanitaires":[ ["Vanne d'arrêt","Robinet de coupure d'eau — à tourner tous les 6-12 mois"],["Vanne d'arrêt grippée","Vanne bloquée — intervention plombier nécessaire à la sortie"],["Bonde mécanique","Vidage du bac de douche ou évier — mécanique ou crépine poussoir"],["Trop-plein / bouche de débordement","Orifice de sécurité anti-débordement (baignoire, lavabo)"],["Jupe de baignoire","Panneau latéral cachant le dessous de la baignoire"],["Trapillon","Trappe de visite sous la baignoire"],["Inverseur bain-douche","Mécanisme de dérivation eau bain / douche"],["Pommeau de douche","Tête de douche"],["Flexible annelé / chromé","Flexible de douche tressé — plus résistant"],["Receveur de douche","Bac encastré au sol"],["Mousseur","Aérateur au bout du robinet — souvent entartré, à changer à la sortie"],["Faïence","Carrelage émaillé (terre cuite vernissée)"],["Miroir biseauté","Miroir avec arêtes taillées en biais — peut être éraillé, oxydé"],["Plan sanitaire","Plan de toilette au-dessus du meuble de salle de bains"] ],
+  "Cuisine":[ ["Carénage","Habillage décoratif (hotte, chaudière, coffrage)"],["Hotte à extraction","Hotte avec évacuation d'air vers l'extérieur"],["Hotte à dépression","Hotte commune sans moteur propre"],["Piezo","Allumage électronique du gaz (bruit tac-tac)"],["Claie","Grille de four en métal tréfilé"],["Lèchefrite","Plateau récupérateur sous le grill"],["Crédence","Revêtement mural derrière taque ou évier"],["Quart de rond","Moulure de jonction plan de travail / crédence"],["Égouttoir","Grille d'écoulement à côté de l'évier"],["Vantail","Battant de porte (1 vantail = 1 battant)"],["Tiroir postiche","Faux tiroir décoratif, non fonctionnel"],["Couvre-chants","Protection des tranches de tablettes de verre (frigo)"],["Caisson sous évier","Élément de meuble avec poubelle tri-sélective"] ],
+  "Amortissement / vétusté":[ ["Vétusté","Usure normale liée au temps — non imputable au locataire"],["Peintures — 6 ans","S'amortissent sur 6 ans. Après 6 ans = à charge du propriétaire"],["Neuf","Jamais utilisé"],["Récent","Peu utilisé, proche du neuf"],["Terne","Perd de l'éclat, sans dommage"],["Défraîchi","Marques d'usage visibles, fonctionnel"],["Usagé","Usage prononcé, entretien insuffisant"],["Amorti","Fin de vie — non imputable au locataire"],["Sans valeur résiduelle","Objet n'ayant plus de valeur pour le propriétaire, non à restituer"] ]
+};
+
+/* =====================================================
+   CORPS D'ÉTAT (structure du rapport)
+   ===================================================== */
+const CORPS = {
+  "Plafonds":[
+    {n:"Plafonds",h:"",opts:[
+      {label:"Matériau",multi:true,choices:["Peinture","Faux-plafond suspendu","Faux-plafond tendu","Enduit lisse","Hourdis béton brut","Lambris bois"]},
+      {label:"Couleur",multi:false,choices:["Blanc","Blanc cassé","Crème","Gris clair","Gris","Beige","Autre couleur"]},
+      {label:"État de la peinture",multi:false,choices:["Neuve — très belle présentation","Récente — belle présentation","Terne — légèrement grisonnante","Défraîchie — peu couvrante","Appliquée sur irrégularités","Usagée","Amortie"]},
+      {label:"Ornements",multi:true,choices:["Rosace centrale","Moulures en périphérie","Aucun ornement","N'appelle pas de remarque"]},
+      {label:"Défauts",multi:true,choices:["N'appelle pas de remarque","Microfissuration (structurelle)","Fissure sous traces de ragréage","Auréole / trace d'humidité","Moisissures","Boursouflure / décollement","Taches jaunâtres","Grisonnement dans les angles","Peinture peu couvrante en périphérie"]},
+      {label:"Points lumineux",multi:true,choices:["N'appelle pas de remarque","Spot(s) encastré(s)","Luminaire suspendu","Ampoule(s) fonctionnelle(s)","Ampoule(s) non fonctionnelle(s)","Points lumineux dépareillés","Câbles en attente (avec sucre)","Embase circulaire","Embase carrée","Rosace d'embase"]}
+    ]}
+  ],
+  "Murs et cloisons":[
+    {n:"Murs et cloisons",h:"",opts:[
+      {label:"Revêtement",multi:false,choices:["Peinture","Papier peint","Carrelage (totalité)","Lambris de carrelage (partiel)","Lambris bois","Crépi","Enduit à l'état brut"]},
+      {label:"Couleur",multi:false,choices:["Blanc","Blanc cassé","Crème","Gris","Beige","Jaune","Vert","Bleu","Autre couleur"]},
+      {label:"État de la peinture",multi:false,choices:["Neuve — très belle présentation","Récente — belle présentation","Terne — légèrement grisonnante","Défraîchie — marquée par l'usage","Peu couvrante","Appliquée sur irrégularités","Usagée","Amortie","Nuances de teinte visibles"]},
+      {label:"Défauts",multi:true,choices:["N'appelle pas de remarque","Trous de cheville rebouchés","Trous de cheville non rebouchés","Impacts sous peinture","Aspérités / irrégularités","Arêtes vives endommagées","Boursouflure / décollement","Traces d'humidité","Moisissures","Traces de ragréage","Tige métallique sortante","Fixation d'équerres"]},
+      {label:"Propreté",multi:false,choices:["N'appelle pas de remarque","Légèrement encrassé","Traces de doigts","Taches diverses","Marques de frottement"]}
+    ]}
+  ],
+  "Plinthes":[
+    {n:"Plinthes",h:"",opts:[
+      {label:"Matériau",multi:false,choices:["Bois peint","MDF peint","PVC","Carrelage","Béton","Absent"]},
+      {label:"Hauteur",multi:false,choices:["Haute plinthe (~12 cm et plus)","Plinthe moyenne (~7–8 cm)","Basse plinthe (~4–5 cm)"]},
+      {label:"Contre-plinthe",multi:false,choices:["Présente","Absente"]},
+      {label:"Couleur",multi:false,choices:["Blanc","Blanc cassé","Teinte bois","Gris","Beige","Autre couleur"]},
+      {label:"État de la peinture",multi:false,choices:["Neuve — très belle présentation","Récente","Terne","Défraîchie","Peu couvrante","Appliquée sur irrégularités","Nuances de teinte"]},
+      {label:"Dégradations",multi:true,choices:["N'appelle pas de remarque","Légères griffes d'usage","Éraillements millimétriques","Éraillements prononcés","Éclats","Décollement","Déboitement","Percutée par la porte","Coulées de peinture","Résidus"]},
+      {label:"Joint plinthe / sol",multi:false,choices:["Propre","Noirci","Évidé","Fissuré","Silicone blanc","Silicone gris","Ciment","Absence de joint"]},
+      {label:"Fixation",multi:false,choices:["Collée","Vissée (vis cachées)","Vissée (vis apparentes)","Clouée"]},
+      {label:"Arrêt de porte",multi:false,choices:["Présent et fonctionnel","Absent — porte heurte la plinthe","Absent — sans problème constaté"]}
+    ]}
+  ],
+  "Sols":[
+    {n:"Sols",h:"",opts:[
+      {label:"Matériau",multi:false,choices:["Parquet massif (chêne, noyer...)","Parquet semi-massif","Parquet laminé / Quickstep","Parquet à bâtons rompus","Parquet mosaïque","Parquet pont de bateau","Carrelage grès-cérame","Carrelage tomette","Carrelage faïence","Dalle de pierre naturelle","Stratifié","Lino / vinyle","Moquette","Béton brut / ciré"]},
+      {label:"Couleur / teinte",multi:false,choices:["Clair (blanc, crème, beige)","Ton bois blond","Ton bois roux / chêne","Ton bois foncé (noyer, merbau)","Gris","Noir","Multicolore / motif","Autre teinte"]},
+      {label:"Finition (parquet)",multi:false,choices:["Vitrifié mat","Vitrifié brillant","Huilé","Ciré","Non traité","N'appelle pas de remarque"]},
+      {label:"État de la finition",multi:false,choices:["N'appelle pas de remarque","Neuf — très bel état locatif","Légère usure sur l'aire de foulée","Usure prononcée","Vitrification amortie","Manque d'entretien","Poncé et revitrifié"]},
+      {label:"Propreté",multi:false,choices:["N'appelle pas de remarque","Légèrement empoussiéré","Taches isolées","Traces verdâtres","Résidus divers","Taches auréolaires","Coulées de peinture"]},
+      {label:"Dégradations",multi:true,choices:["N'appelle pas de remarque","Fines griffes d'usage","Griffes prononcées","Rayures","Renfoncement","Brûlure","Tache de peinture","Latte disjointe","Éclat de carrelage","Carreau fissuré"]},
+      {label:"Joints (carrelage)",multi:true,choices:["N'appelle pas de remarque","Joints propres","Joints blanchâtres","Joints noircis","Joints évidés","Joints fissurés","Joint blanc","Joint gris clair","Joint gris foncé","Joint beige","Joint ciment","Joint époxy"]}
+    ]}
+  ],
+  "Menuiseries extérieures":[
+    {n:"Châssis de fenêtre 1",h:"",dynamic:"fenetre",opts:[
+      {label:"Matériau du châssis",multi:false,choices:["PVC blanc","PVC teinte bois","Aluminium blanc","Aluminium gris","Bois laqué blanc","Bois vernis","Acier"]},
+      {label:"Type d'ouverture",multi:false,choices:["Fixe (condamné)","Simple ouvrant","Oscillo-battant","Coulissant","Porte-fenêtre","Vélux"]},
+      {label:"Vitrages",multi:true,choices:["Double vitrage propre","Double vitrage légèrement sale","Chambre de décompression propre","Chambre de décompression empoussiérée","Vitrage intact","Vitrage fêlé / fissuré","Film translucide — bon état","Film translucide — décollements","Manque d'étanchéité entre vitrages"]},
+      {label:"Dormants / ouvrants",multi:true,choices:["N'appelle pas de remarque","Légère insistance","Nécessite un réglage","Grisonnements urbains","Traces de peinture","Résidus collants","Parcloses en synthétique","Parcloses en aluminium"]},
+      {label:"Béquille / poignée",multi:true,choices:["N'appelle pas de remarque","Métal blanc","Métal chromé","Plastique blanc","Ballotte légèrement","Ballotte fortement","Griffes d'usage","Revient difficilement en position","Résidus collants"]},
+      {label:"Fonctionnement général",multi:false,choices:["Se manipule correctement","Légère insistance","Nécessite un réglage","Ne fonctionne pas"]},
+      {label:"Tablette de fenêtre",multi:false,choices:["Voir tablette séparée ci-dessous","Pas de tablette"]},
+      {label:"Matériau de la tablette",multi:false,choices:["Pierre bleue","Pierre naturelle beige","Pierre naturelle grise","Composite façon marbre","Aluminium","Bois peint","PVC blanc"]},
+      {label:"État de la tablette",multi:false,choices:["N'appelle pas de remarque","Ternie","Marquée par l'âge et l'usage","Légèrement ternie"]},
+      {label:"Défauts de la tablette",multi:true,choices:["N'appelle pas de remarque","Éclat aux arêtes (épaufrure)","Fissure","Impact millimétrique","Traces de frottement","Traces de peinture","Traces verdâtres","Tache"]},
+      {label:"Caches latéraux de la tablette",multi:false,choices:["Présents — sans remarque","Présents — usagés","Absents"]}
+    ]},
+    {n:"Volets / stores extérieurs",h:"",opts:[
+      {label:"Type",multi:false,choices:["Volets battants bois","Volets battants PVC","Volets roulants","Store banne","Store vénitien extérieur","Absent"]},
+      {label:"Commande",multi:false,choices:["Manuel","Électrique","Électrique avec télécommande","Domotique"]},
+      {label:"État",multi:false,choices:["N'appelle pas de remarque","Bon état","Légères griffes d'usage","Défraîchi","Peinture ternie","Lames endommagées"]},
+      {label:"Fonctionnement",multi:false,choices:["Fonctionnel","Légère insistance","Nécessite une intervention","Non fonctionnel"]}
+    ]},
+    {n:"Porte d'entrée 1",h:"",dynamic:"porte_entree",opts:[
+      {label:"Type",multi:false,choices:["Porte blindée","Porte pleine","Porte vitrée","Porte avec imposte vitrée","Double porte","Porte de service"]},
+      {label:"Matériau",multi:false,choices:["Bois massif","MDF peint","Acier","Aluminium","PVC"]},
+      {label:"Couleur / peinture",multi:false,choices:["Blanc","Blanc cassé","Teinte bois","Gris","Marron","Autre couleur"]},
+      {label:"État de la surface",multi:false,choices:["Neuve — très belle présentation","Récente","Terne","Défraîchie","Peu couvrante","Usagée"]},
+      {label:"Vitrage",multi:true,choices:["Pas de vitrage","Vitrage intact","Vitrage fêlé","Verre dépoli","Imposte vitrée fixe"]},
+      {label:"Serrure",multi:true,choices:["N'appelle pas de remarque","Clé à gorge","Serrure 3 points","Serrure 5 points","Verrou présent","Absence de clé","Cylindre usagé"]},
+      {label:"Poignée / béquille",multi:true,choices:["N'appelle pas de remarque","Béquille tubulaire","Béquille rectangulaire","Poignée à pompe","Ballotte légèrement","Ballotte fortement","Rosace absente","Cache-serrure absent"]},
+      {label:"Joints / étanchéité",multi:true,choices:["N'appelle pas de remarque","Joint périphérique bon état","Joint usagé","Joint déchiré","Mauclair bon état","Mauclair à remplacer","Entre-porte en métal","Entre-porte en aluminium","Balai de porte"]},
+      {label:"Seuil",multi:true,choices:["N'appelle pas de remarque","Pierre bleue","Laiton","Aluminium","Seuil usagé","Latte de finition en métal"]},
+      {label:"Fonctionnement",multi:false,choices:["Se manipule correctement","Légère insistance","Frotte dans le chambranle","Nécessite une intervention"]}
+    ]}
+  ],
+  "Menuiseries intérieures":[
+    {n:"Porte intérieure 1",h:"",dynamic:"porte_int",opts:[
+      {label:"Type",multi:false,choices:["Porte isoplane","Porte à 2 panneaux","Porte à 4 panneaux","Porte vitrée","Porte coulissante","Porte à galandage","Double porte","Porte condamnée"]},
+      {label:"Matériau",multi:false,choices:["Bois massif","MDF peint","Isoplane peint"]},
+      {label:"Couleur",multi:false,choices:["Blanc","Blanc cassé","Teinte bois naturel","Gris","Marron","Bois verni","Autre couleur"]},
+      {label:"État de la peinture",multi:false,choices:["Neuve — très belle présentation","Récente","Terne","Défraîchie — irrégularités sous peinture","Peu couvrante","Usagée","Appliquée sur irrégularités"]},
+      {label:"Dégradations panneaux",multi:true,choices:["N'appelle pas de remarque","Impacts millimétriques","Éclats (~1 cm)","Éclats (>1 cm)","Poinçons (enfoncements)","Déchirure","Taches","Griffes","Arêtes inférieures jaunies","Traces de peinture"]},
+      {label:"Paumelles / charnières",multi:true,choices:["N'appelle pas de remarque","Métal blanc","Métal chromé","Métal doré","Cache-paumelles présents","Cache-paumelles absents","Usagées"]},
+      {label:"Béquille / poignée",multi:true,choices:["N'appelle pas de remarque","Béquille tubulaire","Béquille à pompe","Bouton rond","Ballotte légèrement","Ballotte fortement","Rosace présente","Rosace absente","Plaquette de propreté présente","Plaquette de propreté absente"]},
+      {label:"Serrure / clé",multi:true,choices:["Clé présente","Clé absente","Verrou présent","Pas de serrure","Cache-serrure présent","Cache-serrure absent"]},
+      {label:"Chambranle / huisserie",multi:true,choices:["N'appelle pas de remarque","Irrégularités sous peinture","Impacts aux arêtes","Fissuré en partie inférieure","Légèrement peu couvrant"]},
+      {label:"Fonctionnement",multi:false,choices:["Se manipule correctement","Légère insistance","Frotte dans le chambranle","Ne ferme pas","Grince"]}
+    ]},
+    {n:"Placards / dressing",h:"",opts:[
+      {label:"Type de portes",multi:false,choices:["Battantes","Coulissantes","À galandage","Accordéon","Sans porte (ouvert)"]},
+      {label:"Matériau des portes",multi:false,choices:["Bois peint","MDF peint","Miroir","PVC","Stratifié"]},
+      {label:"Couleur",multi:false,choices:["Blanc","Blanc cassé","Teinte bois","Gris","Autre couleur"]},
+      {label:"Nombre de portes",multi:false,choices:["1 porte","2 portes","3 portes","4 portes et plus"]},
+      {label:"Tablettes intérieures",multi:false,choices:["Aucune","1 tablette","2 tablettes","3 tablettes","4 tablettes et plus"]},
+      {label:"Barre de penderie",multi:false,choices:["Présente — sans remarque","Présente — légèrement fléchie","Absente"]},
+      {label:"Charnières / glissières",multi:true,choices:["N'appelle pas de remarque","Charnières bon état","Charnières usagées","Glissières fonctionnelles","Glissières à régler","Galets de nylon présents"]},
+      {label:"Dégradations",multi:true,choices:["N'appelle pas de remarque","Griffes d'usage","Éraillements","Éclats","Taches sur tablettes","Fond fissuré","Planche fléchie"]},
+      {label:"Fermeture",multi:false,choices:["Fermeture correcte","Légère insistance","Ne ferme pas correctement","Absence de poignée"]},
+      {label:"Intérieur de l'armoire",multi:true,choices:["N'appelle pas de remarque","Propre","Légèrement empoussiéré","Taches sur le fond","Trous de clous sur les parois","Résidus divers"]}
+    ]}
+  ],
+  "Électricité":[
+    {n:"Tableau électrique",h:"",opts:[
+      {label:"Emplacement",multi:false,choices:["Hall / entrée","Cuisine","Couloir","Local technique","Autre"]},
+      {label:"Marque",multi:false,choices:["Hager","Legrand","Schneider Electric","Non identifiée"]},
+      {label:"Portillon / accès",multi:false,choices:["Portillon en métal laqué blanc","Portillon en plastique","Sans portillon","Portillon fonctionnel","Portillon endommagé"]},
+      {label:"Schéma unifilaire",multi:false,choices:["Présent dans le coffret","Absent"]},
+      {label:"État général",multi:false,choices:["N'appelle pas de remarque","Propre","Légèrement empoussiéré","Complet","Incomplet","Présence de disjoncteurs sautés"]}
+    ]},
+    {n:"Prises de courant",h:"",opts:[
+      {label:"Marque des plaquettes",multi:false,choices:["Niko","Legrand","Schneider","Non identifiée"]},
+      {label:"Couleur des plaquettes",multi:false,choices:["Blanc","Blanc cassé","Crème","Gris"]},
+      {label:"État des plaquettes",multi:false,choices:["N'appelle pas de remarque","Propres","Voile grisâtre","Jaunies","Fissurées","Griffées","Manquantes"]},
+      {label:"Types de prises présentes",multi:true,choices:["Prises 2P+T (standard)","Prises étanches (IPPS)","Prise TV / radio-télédistribution","Prise téléphone","Prise data (internet)","Double prise","Double prise surajoutée","Goulotte de câbles"]},
+      {label:"État des prises",multi:false,choices:["N'appelle pas de remarque","Toutes fonctionnelles","Prise(s) à vérifier","Prise(s) non fonctionnelle(s)","Prise(s) fissurée(s)"]}
+    ]},
+    {n:"Interrupteurs",h:"",opts:[
+      {label:"Marque des plaquettes",multi:false,choices:["Niko","Legrand","Schneider","Non identifiée"]},
+      {label:"Couleur des plaquettes",multi:false,choices:["Blanc","Blanc cassé","Crème","Gris"]},
+      {label:"Type",multi:true,choices:["Interrupteur simple","Va-et-vient","Interrupteur domotique","Détecteur de présence","Minuterie"]},
+      {label:"État des plaquettes",multi:false,choices:["N'appelle pas de remarque","Propres","Voile grisâtre","Jaunies","Fissurées","Griffées","Nombreux impacts"]},
+      {label:"Fonctionnement",multi:false,choices:["N'appelle pas de remarque","Tous fonctionnels","Interrupteur(s) à vérifier","Non fonctionnel(s)"]}
+    ]},
+    {n:"Luminaires / spots",h:"",opts:[
+      {label:"Type",multi:true,choices:["Spot encastré","Luminaire suspendu","Applique murale","Plafonnier opalin","Luminaire en fer forgé","Bande lumineuse LED","Réglette fluorescente","Câbles en attente (avec sucre)"]},
+      {label:"Embase",multi:false,choices:["Embase circulaire","Embase carrée","Embase rectangulaire","Embase en métal chromé","Embase en métal doré","Sans embase visible"]},
+      {label:"Type d'ampoules",multi:true,choices:["LED","Dichroïque","Halogène","Fluorescente","Ampoule simple (baïonnette)"]},
+      {label:"Ampoules",multi:false,choices:["Toutes fonctionnelles","1 ampoule non fonctionnelle","Plusieurs ampoules non fonctionnelles","Absentes"]},
+      {label:"État général",multi:false,choices:["N'appelle pas de remarque","Bon état","Légèrement empoussiéré","Présence de corrosion","Abat-jour endommagé","Diffuseur fissuré"]}
+    ]}
+  ],
+  "Chauffage / ventilation":[
+    {n:"Chaudière",h:"",opts:[
+      {label:"Type",multi:false,choices:["Chaudière gaz à condensation","Chaudière gaz classique","Chaudière mazout","Chaudière bois / pellets","Pompe à chaleur air/eau","Pompe à chaleur air/air"]},
+      {label:"Marque",multi:false,choices:["Vaillant","Buderus","Viessmann","De Dietrich","Junkers","Remeha","Autre marque"]},
+      {label:"Emplacement",multi:false,choices:["Cuisine","Buanderie","Local technique","Sous-sol / cave","Autre"]},
+      {label:"Carénage / habillage",multi:false,choices:["N'appelle pas de remarque","Propre — belle présentation","Légèrement empoussiéré","Encrassé","Endommagé","Absent"]},
+      {label:"Dernier entretien",multi:false,choices:["Attestation fournie","Attestation non fournie — à demander","Date communiquée verbalement"]},
+      {label:"État général",multi:false,choices:["N'appelle pas de remarque","Réputée fonctionnelle","Bruit anormal signalé","Nécessite une intervention"]}
+    ]},
+    {n:"Radiateur 1",h:"",dynamic:"radiateur",opts:[
+      {label:"Modèle / type",multi:false,choices:["Radiateur à tôle emboutie (Radson, Henrad...)","Radiateur en fonte (d'époque)","Radiateur à panneaux lisses","Radiateur électrique à inertie","Radiateur électrique à convection","Convecteur","Plancher chauffant"]},
+      {label:"Couleur du radiateur",multi:false,choices:["Blanc émaillé","Blanc cassé","Gris","Autre couleur"]},
+      {label:"État du radiateur",multi:false,choices:["N'appelle pas de remarque — belle présentation","Légères traces de frottement","Peinture ternie","Peinture défraîchie","Peinture écaillée","Présence de rouille"]},
+      {label:"Ailettes intérieures",multi:false,choices:["Propres","Légèrement empoussiérées","Fortement empoussiérées","Encrassées"]},
+      {label:"Vanne thermostatique",multi:true,choices:["Présente — fonctionnelle","Tourne correctement","Tourne avec insistance","Grippée","Manquante","Plastique blanc","Plastique chromé","Maculée de peinture","Maculée de résidus grisâtres","Défraîchie"]},
+      {label:"Calorimètre",multi:true,choices:["Absent","Marque Techem","Autre marque","Index relevé et noté","Lisible","Illisible"]},
+      {label:"Fonctionnement",multi:false,choices:["Fonctionnel (non testé — hors saison)","Fonctionnel — testé","Non fonctionnel","Réputé fonctionnel"]}
+    ]},
+    {n:"Ventilation (VMC)",h:"",opts:[
+      {label:"Type",multi:false,choices:["VMC simple flux","VMC double flux","Ventilation naturelle","Ouïe couplée à l'éclairage","Absent"]},
+      {label:"État des grilles",multi:false,choices:["N'appelle pas de remarque","Propres","Légèrement empoussiérées","Fortement empoussiérées","Grille endommagée"]},
+      {label:"Fonctionnement",multi:false,choices:["Fonctionnel","Non testé","Non fonctionnel"]}
+    ]},
+    {n:"Détecteurs de fumée",h:"",opts:[
+      {label:"Présence",multi:false,choices:["Présent(s)","Absent(s) — obligation légale non respectée"]},
+      {label:"Nombre",multi:false,choices:["1 détecteur","2 détecteurs","3 détecteurs et plus"]},
+      {label:"Emplacement",multi:true,choices:["Hall / couloir","Séjour","Chambre","Cuisine","Palier"]},
+      {label:"Test",multi:false,choices:["Testé — fonctionnel","Non testé (trop haut)","Réputé fonctionnel","Non fonctionnel"]},
+      {label:"Marque / type",multi:false,choices:["Non identifiée","Ei Electronics","Aico","Kidde","Autre"]}
+    ]}
+  ],
+  "Équipements sanitaires":[
+    {n:"WC — cuvette et abattant",h:"",opts:[
+      {label:"Marque",multi:false,choices:["Duravit","Ideal Standard","Villeroy & Boch","Roca","Autre marque","Non identifiée"]},
+      {label:"Matériau",multi:false,choices:["Faïence blanche","Porcelaine blanche","Céramique blanche"]},
+      {label:"Fond du vase",multi:false,choices:["Limpide","Légèrement terni","Taches jaunâtres","Taches brunâtres","Entartré"]},
+      {label:"Abattant / lunette",multi:true,choices:["N'appelle pas de remarque","Épais plastique moulé blanc","Système d'amortissement fonctionnel","Amortisseurs intacts","Amortisseurs endommagés","Abattant fissuré","Abattant jauni","Abattant manquant"]},
+      {label:"Fixation au sol",multi:false,choices:["Correctement fixé","Ballotte légèrement","Décollé"]}
+    ]},
+    {n:"WC — chasse d'eau",h:"",opts:[
+      {label:"Réservoir",multi:false,choices:["Réservoir dorsal","Réservoir encastré","Chasse directe"]},
+      {label:"Commande",multi:false,choices:["Bouton simple","Double bouton (économie d'eau)","Cordon","Levier"]},
+      {label:"Fonctionnement",multi:false,choices:["N'appelle pas de remarque","Remplissage correct","Remplissage lent","Écoulement correct","Écoulement lent","Fuite au niveau du joint","Bruit persistant"]},
+      {label:"Vanne d'arrêt",multi:false,choices:["Tourne correctement","Tourne avec insistance","Grippée","Absente"]}
+    ]},
+    {n:"Lavabo",h:"",opts:[
+      {label:"Matériau",multi:false,choices:["Faïence blanche","Porcelaine blanche","Céramique blanche","Résine","Inox"]},
+      {label:"Fixation",multi:false,choices:["Correctement fixé au mur","Légèrement instable","Meuble-lavabo encastré","Sur colonne"]},
+      {label:"État général",multi:false,choices:["N'appelle pas de remarque","Micro-griffes (nettoyage intensif)","Fissure","Éclat","Taches de calcaire"]},
+      {label:"Bonde",multi:false,choices:["Crépine fixe","Crépine poussoir","Bonde à clapet","Fonctionnelle","Endommagée"]},
+      {label:"Robinetterie lavabo",multi:true,choices:["Mitigeur","Robinets séparés","Marque Grohe","Marque Hansgrohe","Marque Ideal Standard","Autre marque","Calcaire important","Légères traces de calcaire","Mousseur propre","Mousseur entartré","Mousseur fortement entartré"]},
+      {label:"Trop-plein",multi:false,choices:["Présent — fonctionnel","Présent — obstrué","Absent"]}
+    ]},
+    {n:"Baignoire / receveur de douche",h:"",opts:[
+      {label:"Type",multi:false,choices:["Baignoire encastrée","Baignoire îlot","Receveur de douche au sol","Bac de douche en hauteur (tup)"]},
+      {label:"Matériau",multi:false,choices:["Acrylique (sonne creux)","Acier émaillé","Fonte","Résine","Céramique","Pierre de synthèse"]},
+      {label:"Couleur",multi:false,choices:["Blanc","Blanc cassé","Autre couleur"]},
+      {label:"État général",multi:false,choices:["N'appelle pas de remarque","Micro-griffes","Griffes prononcées","Éclat d'émail","Tache résistante","Jaunissement"]},
+      {label:"Joint périphérique",multi:false,choices:["Bon état","Légèrement évidé","Fortement évidé","Inégal","Décollé","Moisissures sur les joints","À refaire"]},
+      {label:"Écoulement / bonde",multi:false,choices:["Correct","Lent","Bonde fonctionnelle","Bonde grippée","Crépine présente","Crépine absente"]},
+      {label:"Jupe de baignoire",multi:true,choices:["Absente","Panneau de finition","Carrelage dans la continuité","Trapillon de visite présent","Trapillon de visite absent"]}
+    ]},
+    {n:"Robinetterie salle de bains",h:"",opts:[
+      {label:"Marque",multi:false,choices:["Grohe","Hansgrohe","Ideal Standard","Porcher","Autre marque","Non identifiée"]},
+      {label:"Finition",multi:false,choices:["Métal chromé","Métal brossé","Métal laqué blanc","Métal doré","Plastique chromé"]},
+      {label:"État général",multi:false,choices:["N'appelle pas de remarque","Propre","Légères traces d'eau séchée","Calcaire important","Fortement entartré","Terne"]},
+      {label:"Inverseur bain / douche",multi:false,choices:["Présent — fonctionnel","Absent","Non fonctionnel"]},
+      {label:"Flexible de douche",multi:false,choices:["Flexible annelé chromé","Flexible simple (plastique)","Flexible sous gaine de protection","Bon état","Jauni","À remplacer"]},
+      {label:"Pommeau de douche",multi:true,choices:["Jets réglables","Jets fixes","Légèrement calcaires","Fortement calcaires","Propre"]},
+      {label:"Mousseur robinet",multi:false,choices:["Propre","Légèrement entartré","Fortement entartré","Absent"]}
+    ]},
+    {n:"Paroi / porte de douche",h:"",opts:[
+      {label:"Type",multi:false,choices:["Paroi fixe en verre","Porte battante","Porte coulissante","Paroi accordéon","Rideau de douche","Verre sablé","Verre transparent","Verre gouttelettes"]},
+      {label:"Structure",multi:false,choices:["Métal éloxé","Métal chromé","Métal laqué blanc","Aluminium","PVC","Sans structure (tout verre)"]},
+      {label:"Joint inférieur",multi:false,choices:["Bon état","Usagé","Fortement usagé","Déchiré (~30 cm)","Déchiré (entier)","À remplacer"]},
+      {label:"État général",multi:false,choices:["N'appelle pas de remarque","Légères traces de calcaire","Calcaire important","Micro-griffes","Griffes prononcées","Joint de liaison évidé"]},
+      {label:"Fixation",multi:false,choices:["Correctement fixée","Légèrement instable","Instable — intervention nécessaire"]}
+    ]},
+    {n:"Miroir / meuble de pharmacie",h:"",opts:[
+      {label:"Type",multi:false,choices:["Miroir simple","Miroir biseauté","Miroir avec éclairage intégré","Armoire de toilette (meuble de pharmacie)"]},
+      {label:"Dimensions approximatives",multi:false,choices:["Petit (~40x60 cm)","Moyen (~60x80 cm)","Grand (>80 cm)"]},
+      {label:"Meuble de pharmacie",multi:true,choices:["Sans meuble","1 caisson","2 caissons","1 battant","2 battants","Étagères intérieures","Avec éclairage"]},
+      {label:"État du miroir",multi:false,choices:["N'appelle pas de remarque","Propre","Légèrement sale","Éraillé","Oxydé (taches sombres en périphérie)","Brisé"]},
+      {label:"Fixation",multi:false,choices:["Correctement fixé","Collé au mur","Suspendu","Légèrement instable"]}
+    ]},
+    {n:"Carrelage mural",h:"",opts:[
+      {label:"Matériau / type",multi:false,choices:["Faïence blanche","Faïence de couleur","Grès-cérame","Mosaïque","Pierre naturelle","Lambris de carrelage partiel"]},
+      {label:"Couleur",multi:false,choices:["Blanc","Blanc cassé","Gris","Beige","Autre couleur"]},
+      {label:"État des carreaux",multi:false,choices:["N'appelle pas de remarque","Propres","Légèrement calcaires","Fortement calcaires","Fissure(s)","Carreau(x) décollé(s)","Éclat(s)"]},
+      {label:"Joints",multi:true,choices:["N'appelle pas de remarque","Joints propres","Joints blanchâtres","Joints noircis","Joints évidés","Joint blanc","Joint gris","Joint beige","Liserée / listel / frise présente"]},
+      {label:"Zone carrelée",multi:true,choices:["Totalité du mur","Partie inférieure seulement","Autour de la douche / baignoire","Crédence lavabo"]}
+    ]},
+    {n:"Vannes d'arrêt",h:"",opts:[
+      {label:"État",multi:false,choices:["Tournent correctement","Tournent avec insistance","Grippées — intervention plombier","Non testées","Absentes"]},
+      {label:"Recommandation",multi:false,choices:["Rappel : tourner toutes les vannes tous les 6-12 mois","Informé le locataire","Non applicable"]}
+    ]}
+  ],
+  "Cuisine équipée":[
+    {n:"Table de cuisson",h:"",opts:[
+      {label:"Type",multi:false,choices:["Vitrocéramique","Induction","Gaz (avec piezo)","Gaz (allumage manuel)","Mixte (gaz + vitrocéramique)"]},
+      {label:"Nombre de feux / zones",multi:false,choices:["1 feu / zone","2 feux / zones","3 feux / zones","4 feux / zones","5 feux / zones et plus"]},
+      {label:"État de la surface",multi:false,choices:["N'appelle pas de remarque","Propre","Légères traces de cuisson","Résidus de cuisson brunâtres","Très légères griffes","Griffes prononcées","Éclat / impact","Brûlure"]},
+      {label:"Fonctionnement",multi:false,choices:["Tous les feux / zones fonctionnels","1 feu / zone non fonctionnel","Plusieurs feux non fonctionnels","Non testé"]}
+    ]},
+    {n:"Four",h:"",opts:[
+      {label:"Marque",multi:false,choices:["Whirlpool","Bosch","Siemens","Neff","AEG","Miele","IKEA","Autre marque","Non identifiée"]},
+      {label:"Type",multi:false,choices:["Four classique","Four pyrolyse","Four chaleur tournante","Four vapeur","Micro-ondes intégré"]},
+      {label:"État intérieur",multi:false,choices:["N'appelle pas de remarque","Propre","Légèrement sale","Résidus de cuisson","Taches de graisse","Condensation entre vitrages de la porte"]},
+      {label:"Accessoires",multi:true,choices:["Claie (grille de four) présente","Lèchefrite présente","Lèchefrite usagée","Manuel d'utilisation présent"]},
+      {label:"Ampoule du four",multi:false,choices:["Fonctionnelle","Non fonctionnelle","Absente"]},
+      {label:"Fonctionnement",multi:false,choices:["Fonctionnel","Non testé","Non fonctionnel"]}
+    ]},
+    {n:"Hotte aspirante",h:"",opts:[
+      {label:"Type",multi:false,choices:["Hotte à extraction (air vers l'extérieur)","Hotte à dépression / commune (sans moteur)","Hotte recyclage (filtre à charbon)","Hotte îlot"]},
+      {label:"Carénage / habillage",multi:false,choices:["N'appelle pas de remarque","Propre","Légèrement empoussiéré","Encrassé","Endommagé"]},
+      {label:"Filtres",multi:false,choices:["Propres","Légèrement graisseux","Graisseux — nettoyage nécessaire","Saturés — remplacement nécessaire","Absents"]},
+      {label:"Ampoules",multi:false,choices:["Toutes fonctionnelles","1 ampoule non fonctionnelle","Absentes"]},
+      {label:"Fonctionnement",multi:false,choices:["Fonctionnelle — extraction correcte","Fonctionnelle — ventilation réduite","Non fonctionnelle"]}
+    ]},
+    {n:"Réfrigérateur / congélateur",h:"",opts:[
+      {label:"Marque",multi:false,choices:["Bosch","Miele","Siemens","AEG","Whirlpool","Samsung","LG","IKEA","Autre marque"]},
+      {label:"Type",multi:false,choices:["Réfrigérateur simple","Combiné réfrigérateur-congélateur","Réfrigérateur tiroir congélateur","Congélateur armoire"]},
+      {label:"Clayettes / tablettes",multi:true,choices:["N'appelle pas de remarque","Tablettes de verre avec couvre-chants","Bacs de rangement dans la porte","Grille à œufs présente","Tige de dégivrage présente","Bac(s) fissuré(s)","Gonflement de la tablette inférieure"]},
+      {label:"État général",multi:false,choices:["N'appelle pas de remarque","Propre","Légèrement encrassé","Givre dans le congélateur","Bacs bloqués par le givre","Manque de nettoyage (bac, tambour)"]},
+      {label:"Ampoule intérieure",multi:false,choices:["Fonctionnelle","Non fonctionnelle","Absente"]},
+      {label:"Fonctionnement",multi:false,choices:["Fonctionnel","Non testé","Non fonctionnel","Bruit anormal"]}
+    ]},
+    {n:"Évier et robinetterie cuisine",h:"",opts:[
+      {label:"Matériau de l'évier",multi:false,choices:["Inox (1 bac)","Inox (2 bacs — grand + petit)","Céramique blanche","Résine noire","Pierre découpée","Autre"]},
+      {label:"État de l'évier",multi:false,choices:["N'appelle pas de remarque","Propre","Voile de calcaire","Fines griffes d'usage","Griffes prononcées","Taches","Éclat (pour céramique)"]},
+      {label:"Crépine",multi:false,choices:["Crépine passe-déchets présente","Crépine simple présente","Absente"]},
+      {label:"Égouttoir",multi:false,choices:["Présent — sans remarque","Présent — usagé","Absent"]},
+      {label:"Robinetterie cuisine",multi:true,choices:["Mitigeur standard","Col de cygne","Avec douchette télescopique","Marque Grohe","Marque Hansgrohe","Autre marque","Calcaire important","Légères traces de calcaire","Mousseur propre","Mousseur entartré"]}
+    ]},
+    {n:"Plan de travail",h:"",opts:[
+      {label:"Matériau",multi:false,choices:["Stratifié (laminé)","Granite poli","Pierre naturelle","Composite","Bois massif","Inox"]},
+      {label:"Couleur / teinte",multi:false,choices:["Blanc","Gris","Noir","Tons bois","Beige / crème","Autre"]},
+      {label:"État",multi:false,choices:["N'appelle pas de remarque — belle présentation","Légères traces de frottement","Taches","Brûlure","Éclat","Fissure","Coup sur le chant"]},
+      {label:"Jonction / finitions",multi:true,choices:["Quart de rond présent","Joint de liaison silicone blanc","Joint de liaison silicone gris","Joint évidé","Absence de joint de liaison","Décalage au niveau de la jonction"]}
+    ]},
+    {n:"Meubles hauts et bas",h:"",opts:[
+      {label:"Matériau / finition",multi:false,choices:["Laminé blanc","Laminé teinte bois","Laqué blanc","Laqué couleur","Bois massif"]},
+      {label:"Poignées / prises en main",multi:false,choices:["Poignées tubulaires métal chromé","Poignées tubulaires métal blanc","Poignées en bois","Poignées encastrées","Sans poignée (push-open)"]},
+      {label:"État des vantaux / portes",multi:false,choices:["N'appelle pas de remarque","Bon état","Légères griffes","Éraillements","Éclats","Décollement de placage","Traces de peinture"]},
+      {label:"Charnières",multi:false,choices:["N'appelle pas de remarque","Fonctionnelles","Réglage nécessaire","Charnière cassée"]},
+      {label:"Tiroirs",multi:true,choices:["N'appelle pas de remarque","Coulissent correctement","Fond du tiroir fissuré","Face avant du tiroir endommagée","Tiroir postiche (décoratif)"]},
+      {label:"Intérieur des meubles",multi:true,choices:["N'appelle pas de remarque","Propre","Légèrement empoussiéré","Traces de graisse","Étagères présentes"]},
+      {label:"Plinthe des meubles",multi:false,choices:["N'appelle pas de remarque","Assortie aux meubles","Coulées graisseuses sous le four","Endommagée"]}
+    ]},
+    {n:"Crédence",h:"",opts:[
+      {label:"Matériau",multi:false,choices:["Carrelage","Stratifié blanc","Stratifié teinte bois","Aluminium","Verre","Inox"]},
+      {label:"Couleur",multi:false,choices:["Blanc","Blanc cassé","Gris","Autre couleur"]},
+      {label:"État",multi:false,choices:["N'appelle pas de remarque","Propre","Légèrement encrassé","Traces de graisse","Éclat","Carreau fissuré","Tache résistante"]},
+      {label:"Joints de liaison",multi:false,choices:["N'appelle pas de remarque","Joints propres","Joints évidés","Absence de joint plan de travail / crédence"]}
+    ]}
+  ],
+  "Divers / sécurité":[
+    {n:"Interphone / parlophone",h:"",opts:[
+      {label:"Marque",multi:false,choices:["Bticino","Urmet","Fermax","Non identifiée"]},
+      {label:"Type",multi:false,choices:["Audio uniquement","Audio + vidéo","Avec déverrouillage à distance","Boîtier de sonnette simple"]},
+      {label:"État",multi:false,choices:["N'appelle pas de remarque","Légèrement marqué par l'usage","Maculé de peinture","Endommagé"]},
+      {label:"Fonctionnement",multi:false,choices:["Réputé fonctionnel","Fonctionnel — testé","Non fonctionnel","Non testé"]}
+    ]},
+    {n:"Alarme / détecteur d'intrusion",h:"",opts:[
+      {label:"Clapet / boîtier",multi:false,choices:["Présent et propre","Présent — cassé","Présent — encrassé","Absent"]},
+      {label:"Détecteurs de mouvement",multi:true,choices:["Visibles — réputés fonctionnels","Non visibles","Boîtier endommagé"]},
+      {label:"Fonctionnement",multi:false,choices:["Réputé fonctionnel","Non testé","Code non communiqué","Non fonctionnel"]}
+    ]},
+    {n:"Boîte aux lettres",h:"",opts:[
+      {label:"Type",multi:false,choices:["Boîte individuelle","Boîte collective (numérotée)","Boîte encastrée","Boîte en saillie"]},
+      {label:"Matériau",multi:false,choices:["Métal peint","Inox","Plastique","PVC"]},
+      {label:"Serrure / clé",multi:false,choices:["Clé fournie — fonctionne correctement","Clé difficile à tourner","Serrure absente","Boîte sans serrure"]},
+      {label:"État",multi:false,choices:["N'appelle pas de remarque","Légèrement usagée","Endommagée","Traces de vandalisme"]}
+    ]},
+    {n:"Cheminée / foyer à cassette",h:"",opts:[
+      {label:"Type",multi:false,choices:["Cheminée ouverte","Foyer à cassette","Insert à bois","Foyer bioéthanol"]},
+      {label:"Matériau du manteau",multi:false,choices:["Marbre blanc","Marbre avec veinures","Pierre naturelle","Bois peint","Autre"]},
+      {label:"État du manteau",multi:false,choices:["N'appelle pas de remarque","Joints évidés","Impacts millimétriques aux arêtes","Éclaboussures de peinture","Fissure","Éclat"]},
+      {label:"Contrecœur / dalle de foyer",multi:true,choices:["N'appelle pas de remarque","Peint dans la continuité","Fortement terni","Fissures aux angles","Dallage en damier","Lattes périphériques en métal","Lattes manquantes"]},
+      {label:"Ramonage",multi:false,choices:["Attestation fournie","Attestation non fournie","Date communiquée verbalement","Non applicable"]}
+    ]},
+    {n:"Thermostat",h:"",opts:[
+      {label:"Type",multi:false,choices:["Thermostat mécanique","Thermostat numérique","Thermostat connecté / programmable"]},
+      {label:"Clapet",multi:false,choices:["Présent et propre","Cassé","Absent"]},
+      {label:"Fonctionnement",multi:false,choices:["Réputé fonctionnel","Fonctionnel — testé","Non fonctionnel"]}
+    ]}
+  ]
+};
+
+const CORPS_EXT = {
+  "Extérieur / Terrasse / Balcon":[
+    {n:"Plafond / ciel de terrasse",h:"Traces de type humide, gonflements, microfissurations (structurel — non imputable au locataire)"},
+    {n:"Murs de façade / garde-corps",h:"Matériau (fer forgé, alu, béton), état, peinture, fixation, sécurité"},
+    {n:"Sol extérieur",h:"Dallage (klinkers, dalle béton, lattes bois, caillebotis, tapis), traces verdâtres, microfissurations"},
+    {n:"Porte / portail extérieur",h:"Motorisation (télécommande), état, peinture, serrure"},
+    {n:"Seuil de porte",h:"Matériau (pierre bleue, naturelle), état, microfissurations, latte de finition"}
+  ],
+  "Cave":[
+    {n:"Cave (pièce à usage de rangement)",h:"Sol brut, murs (humidité ?), porte (frotte ?), éclairage — description succincte selon usage"}
+  ],
+  "Garage / Parking":[
+    {n:"Garage / emplacement de parking",h:"Sol, murs, porte (manuelle ou motorisée), télécommande"}
+  ],
+  "Escalier":[
+    {n:"Escalier (marches, contremarches, nez de marche)",h:"Matériau (bois, pierre, marbre), état, impacts aux arêtes, traces de passage"},
+    {n:"Main courante / rampe",h:"Matériau, état de la peinture ou vernis, fixation"},
+    {n:"Palier de repos",h:"Sol, murs, éclairage"}
+  ]
+};
+
+// ─── Modules indispensables pour chaque pièce ───
+// Clé = mot-clé dans le nom de la pièce → corps toujours inclus
+const CORPS_OBLIGATOIRES = ["Plafonds","Murs et cloisons","Plinthes","Sols","Menuiseries extérieures","Menuiseries intérieures","Électricité","Chauffage / ventilation"];
+
+// Modules optionnels : label affiché + corps correspondant
+const MODULES_OPT = [
+  {id:"sanitaires",  label:"🚿 Équipements sanitaires",   corps:"Équipements sanitaires"},
+  {id:"cuisine",     label:"🍳 Cuisine équipée",           corps:"Cuisine équipée"},
+  {id:"securite",    label:"🔒 Divers / sécurité",         corps:"Divers / sécurité"},
+  {id:"ext",         label:"🌿 Extérieur / Terrasse",      corps:"Extérieur / Terrasse / Balcon"},
+  {id:"cave",        label:"📦 Cave",                      corps:"Cave"},
+  {id:"garage",      label:"🚗 Garage / Parking",          corps:"Garage / Parking"},
+  {id:"escalier",    label:"🪜 Escalier",                  corps:"Escalier"},
+];
+
+// Pour chaque nom de pièce, modules activés par défaut
+function getDefaultModules(roomName){
+  const r = roomName.toLowerCase();
+  const defaults = new Set();
+  if(r.includes("salle de bain")||r.includes("sdb")||r.includes("douche")||r.includes("wc")||r.includes("sanitaire")) defaults.add("sanitaires");
+  if(r.includes("cuisine")||r.includes("kitchenette")) { defaults.add("cuisine"); defaults.add("sanitaires"); }
+  if(r.includes("séjour")||r.includes("salon")||r.includes("living")||r.includes("entrée")||r.includes("hall")) defaults.add("securite");
+  if(r.includes("terrasse")||r.includes("balcon")||r.includes("jardin")||r.includes("extérieur")) defaults.add("ext");
+  if(r.includes("cave")) defaults.add("cave");
+  if(r.includes("garage")||r.includes("parking")) defaults.add("garage");
+  if(r.includes("escalier")) defaults.add("escalier");
+  return defaults;
+}
+
+function getCorps(roomName){
+  const r = roomName.toLowerCase();
+  let out = {...CORPS};
+  if(r.includes("terrasse")||r.includes("balcon")||r.includes("extérieur")||r.includes("jardin")){
+    out = {...out, "Extérieur / Terrasse / Balcon": CORPS_EXT["Extérieur / Terrasse / Balcon"]};
+  }
+  if(r.includes("cave")) out["Cave"] = CORPS_EXT["Cave"];
+  if(r.includes("garage")||r.includes("parking")) out["Garage / Parking"] = CORPS_EXT["Garage / Parking"];
+  if(r.includes("escalier")) out = {...out, "Escalier": CORPS_EXT["Escalier"]};
+  return out;
+}
+
+/* =====================================================
+   DB
+   ===================================================== */
+let DB = (()=>{ try{ return JSON.parse(localStorage.getItem("edl_v3")||"[]"); }catch(e){ return []; } })();
+function saveDB(){ localStorage.setItem("edl_v3", JSON.stringify(DB)); }
+let cid=null, croom=null, ctype="entree";
+function cur(){ return DB.find(e=>e.id===cid); }
+function uid(){ return "e"+Date.now()+"_"+Math.floor(Math.random()*9999); }
+function progress(edl){ let d=0,t=0; Object.values(edl.rooms).forEach(r=>r.postes.forEach(p=>{t++;if(p.st||p.na)d++;})); return{d,t}; }
+
+/* =====================================================
+   UTILS
+   ===================================================== */
+function toast(m){ const el=document.getElementById("toast"); el.textContent=m; el.classList.add("on"); setTimeout(()=>el.classList.remove("on"),2200); }
+function show(id){ document.querySelectorAll(".scr").forEach(s=>s.classList.remove("on")); document.getElementById(id).classList.add("on"); window.scrollTo(0,0); }
+function esc(s){ return (s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+/* =====================================================
+   HOME
+   ===================================================== */
+function renderHome(){
+  const el=document.getElementById("edlList"); el.innerHTML="";
+  if(!DB.length){ el.innerHTML='<div class="empty">Aucun état des lieux.<br>Choisissez Entrée ou Sortie pour commencer.</div>'; return; }
+  DB.slice().reverse().forEach(edl=>{
+    const {d,t}=progress(edl); const pct=t?Math.round(d/t*100):0;
+    const partial=pct>0&&pct<100;
+    const div=document.createElement("div");
+    div.className="ec "+(partial?"p":edl.type==="entree"?"e":"s");
+    div.innerHTML=`<div class="ec-pin"></div><div class="ec-body"><div class="ec-addr">${esc(edl.adr||"Sans adresse")}</div><div class="ec-meta">${esc(edl.dat||"")} · ${esc(edl.loc||"")} </div></div><span class="ec-badge ${edl.type==="entree"?"eb-e":"eb-s"}">${edl.type==="entree"?"Entrée":"Sortie"}</span><span class="ec-pct">${pct}%</span>`;
+    div.addEventListener("click",()=>openDetail(edl.id));
+    el.appendChild(div);
+  });
+}
+
+document.getElementById("btnE").addEventListener("click",()=>openForm("entree"));
+document.getElementById("btnS").addEventListener("click",()=>openForm("sortie"));
+
+function openForm(type){
+  ctype=type;
+  document.getElementById("ftitle").textContent=type==="entree"?"État des lieux d\u2019entrée":"État des lieux de sortie";
+  document.getElementById("fsub").textContent=type==="entree"?"Renseignez les informations administratives avant de commencer la visite":"Référencez l\u2019ELE et les attestations d\u2019entretien";
+  document.getElementById("iboxE").style.display=type==="entree"?"":"none";
+  document.getElementById("iboxS").style.display=type==="sortie"?"":"none";
+  document.getElementById("f-ele-wrap").style.display=type==="sortie"?"":"none";
+  document.getElementById("f-dat").value=new Date().toISOString().slice(0,10);
+  document.getElementById("f-hre").value="09:00";
+  show("sc-form");
+  // sync radio buttons
+  document.getElementById("chk-"+type).checked=true;
+  document.querySelectorAll("input[name='edl-type']").forEach(r=>{
+    r.addEventListener("change",()=>{
+      ctype=r.value;
+      document.getElementById("iboxE").style.display=r.value==="entree"?"":"none";
+      document.getElementById("iboxS").style.display=r.value==="sortie"?"":"none";
+      document.getElementById("f-ele-wrap").style.display=r.value==="sortie"?"":"none";
+    });
+  });
+}
+document.getElementById("backForm").addEventListener("click",()=>{renderHome();show("sc-home");});
+document.getElementById("cancelFormBtn").addEventListener("click",()=>{renderHome();show("sc-home");});
+
+function getCleData(){
+  const rows=[]; document.querySelectorAll("#cleTable tbody tr").forEach(tr=>{
+    const inputs=tr.querySelectorAll("input");
+    const type=tr.querySelector("td").textContent.trim();
+    const modele=inputs[0].value.trim();
+    const qte=inputs[1].value.trim();
+    if(qte&&qte!=="0") rows.push({type,modele,qte});
+  });
+  return rows;
+}
+
+function getCaloData(){
+  const rows=[]; document.querySelectorAll("#caloTable tbody tr").forEach(tr=>{
+    const inputs=tr.querySelectorAll("input");
+    const piece=inputs[0].value.trim();
+    const num=inputs[1].value.trim();
+    const idx1=inputs[2].value.trim();
+    const idx2=inputs[3].value.trim();
+    if(piece||num) rows.push({piece,num,idx1,idx2});
+  });
+  return rows;
+}
+
+document.getElementById("createBtn").addEventListener("click",()=>{
+  const adr=document.getElementById("f-adr").value.trim();
+  if(!adr){toast("Indiquez au moins l\u2019adresse");return;}
+  const pieces=document.getElementById("f-pcs").value.split("\n").map(s=>s.trim()).filter(Boolean);
+  // Compteurs
+  const cptRows=[]; document.querySelectorAll("#cptTable tbody tr").forEach(tr=>{
+    const cells=tr.querySelectorAll("td"); const inputs=tr.querySelectorAll("input");
+    cptRows.push({label:cells[0].textContent,num:inputs[0].value,idx:inputs[1].value,unit:cells[3]?cells[3].textContent:""});
+  });
+  const rooms={};
+  pieces.forEach(p=>{
+    const defaultMods = getDefaultModules(p);
+    // Corps à inclure : obligatoires + modules par défaut
+    const postes=[];
+    // Obligatoires
+    CORPS_OBLIGATOIRES.forEach(cn=>{
+      if(CORPS[cn]) CORPS[cn].forEach(item=>postes.push({n:item.n,corps:cn,hint:item.h,opts:item.opts||null,dynamic:item.dynamic||null,st:null,na:false,cm:"",sel:{},amt:"",imp:true}));
+    });
+    // Modules optionnels activés par défaut
+    MODULES_OPT.forEach(mod=>{
+      if(defaultMods.has(mod.id)&&CORPS[mod.corps]){
+        CORPS[mod.corps].forEach(item=>postes.push({n:item.n,corps:mod.corps,hint:item.h,opts:item.opts||null,dynamic:item.dynamic||null,st:null,na:false,cm:"",sel:{},amt:"",imp:true}));
+      }
+    });
+    rooms[p]={note:"",postes,modules:Array.from(defaultMods)};
+  });
+  const edl={id:uid(),type:document.querySelector('input[name="edl-type"]:checked')?.value||ctype,adr,etg:document.getElementById("f-etg").value.trim(),typ:document.getElementById("f-typ").value,dat:document.getElementById("f-dat").value,hre:document.getElementById("f-hre").value,prp:document.getElementById("f-prp").value.trim(),loc:document.getElementById("f-loc").value.trim(),eml:document.getElementById("f-eml").value.trim(),dur:document.getElementById("f-dur").value.trim(),cha:document.getElementById("f-cha").value,compteurs:cptRows,cle:getCleData(),cave:document.getElementById("f-cave").value.trim(),calo:getCaloData(),pei:document.getElementById("f-pei").value.trim(),ent:document.getElementById("f-ent").value.trim(),ele:document.getElementById("f-ele").value.trim(),rmq:document.getElementById("f-rmq").value.trim(),rooms,sign1:null,sign2:null,done:false};
+  DB.push(edl); saveDB(); openDetail(edl.id); toast("Dossier créé");
+});
+
+/* =====================================================
+   DETAIL
+   ===================================================== */
+function openDetail(id){
+  cid=id; const edl=cur(); croom=Object.keys(edl.rooms)[0];
+  document.getElementById("dpill").textContent=edl.type==="entree"?"Entrée":"Sortie";
+  document.getElementById("dpill").className="pill "+(edl.type==="entree"?"e":"s");
+  document.getElementById("daddr").textContent=edl.adr;
+  document.getElementById("dmeta").textContent=[edl.dat,edl.etg,edl.typ].filter(Boolean).join(" · ");
+  document.getElementById("pfill").className="prog-fill"+(edl.type==="sortie"?" s":"");
+  renderTabs(); renderRoom(); show("sc-detail");
+}
+document.getElementById("backDetail").addEventListener("click",()=>{renderHome();show("sc-home");});
+document.getElementById("backSum").addEventListener("click",()=>show("sc-detail"));
+
+function renderTabs(){
+  const edl=cur(); const tb=document.getElementById("tabs"); tb.innerHTML="";
+  Object.keys(edl.rooms).forEach(r=>{
+    const room=edl.rooms[r]; const allDone=room.postes.every(p=>p.st||p.na);
+    const chip=document.createElement("button");
+    chip.className="chip"+(r===croom?" on":"");
+    chip.innerHTML=esc(r)+`<span class="chip-dot${allDone?" ok":""}"></span>`;
+    chip.addEventListener("click",()=>{croom=r;renderTabs();renderRoom();window.scrollTo(0,0);});
+    tb.appendChild(chip);
+  });
+}
+
+const SLABELS={neuf:"Neuf",recent:"Récent",terne:"Terne",defraichi:"Défraîchi",usage:"Usagé",amorti:"Amorti"};
+const STATES=[{k:"neuf",l:"Neuf",c:"sn"},{k:"recent",l:"Récent",c:"sr"},{k:"terne",l:"Terne",c:"st"},{k:"defraichi",l:"Défraîchi",c:"sd"},{k:"usage",l:"Usagé",c:"su"},{k:"amorti",l:"Amorti",c:"sa"}];
+
+function renderRoom(){
+  const edl=cur(); const room=edl.rooms[croom]; const isSortie=edl.type==="sortie";
+  const wrap=document.getElementById("roomContent"); wrap.innerHTML="";
+
+  const rtitle=document.createElement("div"); rtitle.className="rtitle";
+  rtitle.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>${esc(croom)}`;
+  wrap.appendChild(rtitle);
+
+  const rnw=document.createElement("div"); rnw.className="rnote-wrap";
+  rnw.innerHTML=`<label>Remarque générale sur la pièce</label><textarea placeholder="Ex : pièce traversante, exposition sud, parquet d'époque...">${esc(room.note)}</textarea>`;
+  rnw.querySelector("textarea").addEventListener("input",e=>{room.note=e.target.value;saveDB();});
+  wrap.appendChild(rnw);
+
+  // ── Sélecteur de modules optionnels ──
+  if(!room.modules) room.modules=Array.from(getDefaultModules(croom));
+  const modWrap = document.createElement("div"); modWrap.className="mod-selector";
+  modWrap.innerHTML='<div class="mod-label">Modules présents dans cette pièce :</div><div class="mod-chips" id="modChips"></div>';
+  wrap.appendChild(modWrap);
+  const chipsEl = modWrap.querySelector("#modChips");
+  MODULES_OPT.forEach(mod=>{
+    const active = room.modules.includes(mod.id);
+    const chip = document.createElement("button");
+    chip.className = "mod-chip"+(active?" active":"");
+    chip.textContent = mod.label;
+    chip.addEventListener("click",()=>{
+      const edl=cur(); const room=edl.rooms[croom];
+      if(!room.modules) room.modules=[];
+      const idx=room.modules.indexOf(mod.id);
+      if(idx>=0){
+        // Désactiver : retirer les postes de ce corps
+        room.modules.splice(idx,1);
+        room.postes = room.postes.filter(p=>p.corps!==mod.corps);
+      } else {
+        // Activer : ajouter les postes de ce corps
+        room.modules.push(mod.id);
+        if(CORPS[mod.corps]){
+          CORPS[mod.corps].forEach(item=>{
+            room.postes.push({n:item.n,corps:mod.corps,hint:item.h,opts:item.opts||null,dynamic:item.dynamic||null,st:null,na:false,cm:"",sel:{},amt:"",imp:true});
+          });
+        }
+      }
+      saveDB(); renderRoom(); renderTabs(); updateProg();
+    });
+    chipsEl.appendChild(chip);
+  });
+
+  // group by corps
+  const groups={};
+  room.postes.forEach((p,i)=>{if(!groups[p.corps])groups[p.corps]=[]; groups[p.corps].push({p,i});});
+
+  Object.entries(groups).forEach(([cn,items])=>{
+    const cl=document.createElement("div"); cl.className="corps-lbl"; cl.textContent=cn; wrap.appendChild(cl);
+    if(VOC[cn]){ const vb=document.createElement("button"); vb.className="vocab-btn"; vb.textContent="Vocabulaire "+cn; vb.addEventListener("click",()=>showVoc(cn)); wrap.appendChild(vb); }
+    // Bouton "Ajouter" pour les postes dynamiques (fenêtres, portes)
+    const dynamicTypes = ["fenetre","tablette","porte_entree","porte_int"];
+    const dynamicLabels = {fenetre:"+ Ajouter un châssis", tablette:"+ Ajouter une tablette", porte_entree:"+ Ajouter une porte d'entrée", porte_int:"+ Ajouter une porte intérieure"};
+    const addedDynamic = {};
+    items.forEach(({p})=>{ if(p.dynamic) addedDynamic[p.dynamic]=(addedDynamic[p.dynamic]||0)+1; });
+
+    items.forEach(({p,i})=>{
+      const el=document.createElement("div"); el.className="poste";
+      if(!p.sel) p.sel={};
+
+      // — Postes avec opts (cases à cocher par groupe) —
+      if(p.opts && p.opts.length){
+        let html=`<div class="pname">${esc(p.n)}</div>`;
+        html+=`<div class="opts-separator"></div>`;
+        p.opts.forEach((grp,gi)=>{
+          html+=`<div class="opts-group" data-gi="${gi}">`;
+          html+=`<span class="opts-group-label">${esc(grp.label)}</span>`;
+          html+=`<div class="opts-chips">`;
+          grp.choices.forEach((ch,ci)=>{
+            const sel=p.sel[gi]&&p.sel[gi].includes(ci);
+            html+=`<button class="opt-chip${sel?" on":""}" data-gi="${gi}" data-ci="${ci}">${esc(ch)}</button>`;
+          });
+          html+=`</div></div>`;
+        });
+        html+=`<div class="opts-separator"></div>`;
+        // État général (neuf→amorti) + NA + commentaire
+        const stBtns=STATES.map(s=>`<button class="sb${p.st===s.k?" "+s.c:""}" data-s="${s.k}">${s.l}</button>`).join("");
+        html+=`<div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink2);margin-bottom:5px;">État général</div>`;
+        html+=`<div class="state-grid">${stBtns}</div>`;
+        html+=`<div class="pfoot"><button class="na-btn${p.na?" on":""}">Non concerné</button><input class="pc" type="text" placeholder="Commentaire libre, emplacement précis du défaut..." value="${esc(p.cm)}"></div>`;
+        if(isSortie){ html+=`<div class="drow"><span class="dlbl">Chiffrage :</span><input class="dinput" type="number" min="0" placeholder="0" value="${esc(p.amt)}"><span class="dunit">€</span></div><label class="ichk"><input type="checkbox" ${p.imp?"checked":""}> Imputable au locataire</label>`; }
+        el.innerHTML=html;
+
+        // listeners chips
+        el.querySelectorAll(".opt-chip").forEach(btn=>{
+          btn.addEventListener("click",()=>{
+            const gi=parseInt(btn.dataset.gi); const ci=parseInt(btn.dataset.ci);
+            const grp=p.opts[gi];
+            if(!p.sel[gi]) p.sel[gi]=[];
+            if(grp.multi){
+              const idx=p.sel[gi].indexOf(ci);
+              if(idx>=0) p.sel[gi].splice(idx,1); else p.sel[gi].push(ci);
+            } else {
+              p.sel[gi]= p.sel[gi].includes(ci)?[]:[ci];
+            }
+            if(p.na) p.na=false;
+            // marquer comme "renseigné" si au moins un opt coché
+            p.st = Object.values(p.sel).some(arr=>arr.length>0) ? (p.st||"recent") : p.st;
+            saveDB(); renderRoom(); renderTabs(); updateProg();
+          });
+        });
+      } else {
+        // — Postes classiques (sans opts) —
+        const stBtns=STATES.map(s=>`<button class="sb${p.st===s.k?" "+s.c:""}" data-s="${s.k}">${s.l}</button>`).join("");
+        let extra="";
+        if(isSortie){ extra=`<div class="drow"><span class="dlbl">Chiffrage :</span><input class="dinput" type="number" min="0" placeholder="0" value="${esc(p.amt)}"><span class="dunit">€</span></div><label class="ichk"><input type="checkbox" ${p.imp?"checked":""}> Imputable au locataire</label>`; }
+        el.innerHTML=`<div class="pname">${esc(p.n)}</div><div class="phint">${esc(p.hint)}</div><div class="state-grid">${stBtns}</div><div class="pfoot"><button class="na-btn${p.na?" on":""}">Non concerné</button><input class="pc" type="text" placeholder="Commentaire précis, emplacement du défaut..." value="${esc(p.cm)}"></div>${extra}`;
+        if(isSortie){
+          el.querySelector(".dinput").addEventListener("input",e=>{p.amt=e.target.value;saveDB();});
+          el.querySelector(".ichk input").addEventListener("change",e=>{p.imp=e.target.checked;saveDB();});
+        }
+      }
+
+      // listeners communs
+      el.querySelectorAll(".sb").forEach(btn=>btn.addEventListener("click",()=>{const s=btn.dataset.s;p.st=p.st===s?null:s;if(p.st)p.na=false;saveDB();renderRoom();renderTabs();updateProg();}));
+      el.querySelector(".na-btn").addEventListener("click",()=>{p.na=!p.na;if(p.na)p.st=null;saveDB();renderRoom();renderTabs();updateProg();});
+      el.querySelector(".pc").addEventListener("input",e=>{p.cm=e.target.value;saveDB();});
+      if(isSortie && el.querySelector(".dinput")){
+        el.querySelector(".dinput").addEventListener("input",e=>{p.amt=e.target.value;saveDB();});
+        el.querySelector(".ichk input").addEventListener("change",e=>{p.imp=e.target.checked;saveDB();});
+      }
+      // Bouton "ajouter" affiché après le dernier item du groupe dynamic
+      if(p.dynamic){
+        const sameType = items.filter(x=>x.p.dynamic===p.dynamic);
+        const isLast = sameType[sameType.length-1].p === p;
+        if(isLast){
+          const addBtn = document.createElement("button");
+          addBtn.className = "add-dynamic-btn";
+          addBtn.textContent = dynamicLabels[p.dynamic] || "+ Ajouter";
+          addBtn.addEventListener("click",()=>{
+            const edl=cur(); const room=edl.rooms[croom];
+            const existingOfType = room.postes.filter(x=>x.dynamic===p.dynamic);
+            const num = existingOfType.length + 1;
+            const template = room.postes.find(x=>x.dynamic===p.dynamic);
+            if(!template) return;
+            const newPoste = {
+              n: template.n.replace(/\s*\d+$/, "") + " " + num,
+              corps: template.corps,
+              hint: template.hint,
+              opts: JSON.parse(JSON.stringify(template.opts||[])),
+              dynamic: template.dynamic,
+              st: null, na: false, cm: "", sel: {}, amt: "", imp: true
+            };
+            const allOfType = room.postes.filter(x=>x.dynamic===p.dynamic);
+            const lastOfType = allOfType[allOfType.length-1];
+            const lastIdx = room.postes.indexOf(lastOfType);
+            room.postes.splice(lastIdx+1, 0, newPoste);
+            saveDB(); renderRoom(); renderTabs();
+          });
+          wrap.appendChild(addBtn);
+        }
+      }
+      wrap.appendChild(el);
+    });
+  });
+
+  // nav
+  const keys=Object.keys(edl.rooms); const ri=keys.indexOf(croom); const last=ri===keys.length-1;
+  const nav=document.createElement("div"); nav.className="bnav";
+  nav.innerHTML=`<button class="bn-b" ${ri===0?"disabled style='opacity:.35'":""}>Précédent</button><button class="${last?"bn-f":"bn-n"}">${last?"Récapitulatif →":"Suivant →"}</button>`;
+  nav.children[0].addEventListener("click",()=>{if(ri>0){croom=keys[ri-1];renderTabs();renderRoom();window.scrollTo(0,0);}});
+  nav.children[1].addEventListener("click",()=>{if(last)openSummary();else{croom=keys[ri+1];renderTabs();renderRoom();window.scrollTo(0,0);}});
+  wrap.appendChild(nav);
+  updateProg();
+}
+
+function updateProg(){
+  const edl=cur(); const {d,t}=progress(edl); const pct=t?Math.round(d/t*100):0;
+  document.getElementById("pfill").style.width=pct+"%";
+  document.getElementById("ptxt").textContent=d+" / "+t+" postes";
+  document.getElementById("ppct").textContent=pct+"%";
+}
+
+/* =====================================================
+   VOCAB MODAL
+   ===================================================== */
+function showVoc(cn){
+  const items=VOC[cn]||[];
+  document.getElementById("vtitle").textContent="Vocabulaire — "+cn;
+  document.getElementById("vcontent").innerHTML=items.map(([t,d])=>`<div class="vi"><b>${esc(t)}</b> : ${esc(d)}</div>`).join("");
+  document.getElementById("vmodal").classList.add("on");
+}
+document.getElementById("vclose").addEventListener("click",()=>document.getElementById("vmodal").classList.remove("on"));
+document.getElementById("vmodal").addEventListener("click",e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove("on");});
+
+/* =====================================================
+   SUMMARY
+   ===================================================== */
+function openSummary(){
+  const edl=cur(); const isSortie=edl.type==="sortie";
+  const cnt={neuf:0,recent:0,terne:0,defraichi:0,usage:0,amorti:0};
+  const dlines=[];
+  Object.entries(edl.rooms).forEach(([rn,room])=>room.postes.forEach(p=>{
+    if(!p.na&&p.st)cnt[p.st]=(cnt[p.st]||0)+1;
+    if(isSortie&&parseFloat(p.amt)>0&&p.imp)dlines.push({room:rn,name:p.n,amt:parseFloat(p.amt)});
+  }));
+  const good=cnt.neuf+cnt.recent; const mid=cnt.terne+cnt.defraichi; const bad=cnt.usage+cnt.amorti;
+  document.getElementById("sgrid").innerHTML=`<div class="sc sc1"><div class="n">${good}</div><div class="l">Neuf / Récent</div></div><div class="sc sc2"><div class="n">${mid}</div><div class="l">Terne / Défraîchi</div></div><div class="sc sc3"><div class="n">${bad}</div><div class="l">Usagé / Amorti</div></div>`;
+  if(isSortie){
+    document.getElementById("dsec").style.display="";
+    const total=dlines.reduce((s,l)=>s+l.amt,0);
+    document.getElementById("dlist").innerHTML=dlines.length?dlines.map(l=>`<div class="dline"><div>${esc(l.name)}<div class="dr">${esc(l.room)}</div></div><div class="dm">${l.amt.toFixed(2)} €</div></div>`).join(""):'<div style="font-size:12px;color:var(--ink3);padding:6px 0;">Aucun chiffrage saisi</div>';
+    document.getElementById("dtot").textContent=total.toFixed(2)+" \u20ac";
+  } else { document.getElementById("dsec").style.display="none"; }
+  document.getElementById("delbox").innerHTML=isSortie
+    ?"<b>Rappels sortie :</b> 1 semaine pour vérifier plomberie/électricité. 30 jours dès réception pour les remarques. Envoyez les relevés de compteurs par mail le jour des constatations aux deux parties."
+    :"<b>Rappels entrée :</b> Le locataire dispose de <b>7 jours</b> pour signaler tout dysfonctionnement de plomberie ou d'électricité. Il a <b>30 jours</b> dès réception du rapport pour ses remarques. Envoyez les relevés de compteurs par mail le jour même.";
+  setupSig("sign1",edl.sign1); setupSig("sign2",edl.sign2);
+  show("sc-summary");
+}
+
+document.getElementById("finalBtn").addEventListener("click",()=>{
+  const edl=cur(); const {d,t}=progress(edl);
+  if(d<t&&!confirm((t-d)+" poste(s) non renseigné(s). Terminer quand même ?"))return;
+  edl.done=true; saveDB(); toast("État des lieux enregistré"); renderHome(); show("sc-home");
+});
+
+document.getElementById("deleteBtn").addEventListener("click",()=>{
+  if(!confirm("Supprimer définitivement ce dossier ?"))return;
+  DB=DB.filter(e=>e.id!==cid); saveDB(); toast("Supprimé"); renderHome(); show("sc-home");
+});
+
+document.getElementById("exportBtn").addEventListener("click",()=>{
+  const edl=cur(); const isSortie=edl.type==="sortie";
+  const titre=isSortie?"CONSTAT D'ÉTAT DES LIEUX LOCATIF DE SORTIE":"CONSTAT D'ÉTAT DES LIEUX LOCATIF D'ENTRÉE";
+  const an=new Date(edl.dat).getFullYear();
+  const mois=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"][new Date(edl.dat).getMonth()];
+  const jour=new Date(edl.dat).getDate();
+  let txt=titre+"\n"+"=".repeat(55)+"\n\n";
+  txt+=`L\u2019an deux mille ${["zéro","un","deux","trois","quatre","cinq","six","sept","huit","neuf","dix","onze","douze","treize","quatorze","quinze","seize","dix-sept","dix-huit","dix-neuf","vingt","vingt-et-un","vingt-deux","vingt-trois","vingt-quatre"][an-2000]||an}, le ${jour} ${mois}.\n\n`;
+  txt+="Agissant à la requête conjointe de\n\n";
+  txt+=`${edl.prp}, propriétaire / mandataire.\n\net de\n\n${edl.loc}, locataire ${isSortie?"sortant":"entrant"}, faisant élection de domicile dans les lieux loués.\n\n`;
+  txt+=`À l\u2019effet de procéder aux constatations de l\u2019état des lieux locatif ${isSortie?"de sortie":"d\u2019entrée"} du ${edl.typ.toLowerCase()} sis à\n\n${edl.adr}${edl.etg?" ("+edl.etg+")":""}\n\n`;
+  txt+="Et de déterminer, conformément aux termes de l\u2019article 1730 du Code Civil et aux us et coutumes en usage en matière de contrat de louage, l\u2019état dans lequel le preneur reçoit les lieux loués et dans lequel il devra les restituer à sa sortie, exception faite de ce qui aurait péri par vétusté, usage normal ou force majeure.\n\n";
+  txt+="─".repeat(55)+"\n\nNOTES LIMINAIRES\n\n";
+  txt+="Dans le présent procès-verbal, il n\u2019a pas été tenu compte des défectuosités d\u2019ordre constructif, telles que les fissures ou crevasses affectant les maçonneries. L\u2019absence d\u2019observation pour certains constituants équivaut à reconnaître que ces éléments se trouvaient dans un état locatif normal.\n\n";
+  if(isSortie&&edl.ele) txt+=`Référence de l\u2019état des lieux d\u2019entrée : ${edl.ele}\n`;
+  if(edl.dur) txt+=`Durée d\u2019occupation : ${edl.dur}\n`;
+  if(edl.cha) txt+=`Chauffage : ${edl.cha}\n`;
+  if(edl.pei){ const anneesPei=new Date().getFullYear()-parseInt(edl.pei); txt+=`Dernière peinture : ${edl.pei} (${anneesPei} an(s) — peintures ${anneesPei>=6?"amorties, non imputables au locataire":"non encore amorties (amortissement sur 6 ans)"})\n`; }
+  if(edl.ent) txt+=`\nEntretiens :\n${edl.ent}\n`;
+  txt+="\n─".repeat(55)+"\n\nRELEVÉ DES COMPTEURS\n\n";
+  edl.compteurs.filter(c=>c.num||c.idx).forEach(c=>{ txt+=`${c.label} : n° ${c.num||"—"} | Index : ${c.idx||"—"} ${c.unit}\n`; });
+  // Calorimètres
+  if(edl.calo&&edl.calo.length){
+    txt+="\nCALORIMÈTRES\n";
+    txt+="Pièce".padEnd(30)+"N° calorimètre".padEnd(18)+"Index 1".padEnd(12)+"Index 2\n";
+    txt+="─".repeat(65)+"\n";
+    edl.calo.forEach(c=>{ txt+=(c.piece||"—").padEnd(30)+(c.num||"—").padEnd(18)+(c.idx1||"0").padEnd(12)+(c.idx2||"0")+"\n"; });
+  }
+  txt+="\nREMISE DES CLÉS\n"+edl.cle+"\n";
+  if(edl.cave) txt+="\nCave / parking : "+edl.cave+"\n";
+  if(edl.rmq) txt+="\n─".repeat(55)+"\n\nREMARQUES GÉNÉRALES\n\n"+edl.rmq+"\n";
+  txt+="\n"+"─".repeat(55)+"\n\nCONSTATATIONS\n";
+
+  let totalDegat=0;
+  Object.entries(edl.rooms).forEach(([rn,room])=>{
+    txt+="\n\n"+rn.toUpperCase()+"\n"+"─".repeat(rn.length)+"\n";
+    if(room.note) txt+="\n"+room.note+"\n";
+    let lastCorps="";
+    room.postes.forEach(p=>{
+      if(p.corps!==lastCorps){txt+="\n["+p.corps+"]\n";lastCorps=p.corps;}
+      if(p.na){
+        txt+="  \u2022 "+p.n+" : Non concerné\n";
+      } else {
+        // construire le texte à partir des opts cochés
+        let details=[];
+        if(p.opts&&p.sel){
+          p.opts.forEach((grp,gi)=>{
+            const sel=p.sel[gi]||[];
+            if(sel.length>0){
+              const vals=sel.map(ci=>grp.choices[ci]).join(", ");
+              details.push(grp.label+" : "+vals);
+            }
+          });
+        }
+        const stl=SLABELS[p.st]||"Non renseigné";
+        let line="  \u2022 "+p.n;
+        if(details.length>0) line+="\n      "+details.join("\n      ");
+        line+="\n      État général : "+stl;
+        if(p.cm) line+="\n      Observations : "+p.cm;
+        if(isSortie&&parseFloat(p.amt)>0){ line+="\n      Chiffrage : "+parseFloat(p.amt).toFixed(2)+" \u20ac"+(p.imp?" — imputable locataire":" — non imputable"); if(p.imp)totalDegat+=parseFloat(p.amt); }
+        txt+=line+"\n";
+      }
+    });
+  });
+
+  if(isSortie){
+    txt+="\n\n"+"=".repeat(55)+"\n";
+    txt+="INDEMNITÉ COMPENSATOIRE TOTALE : "+totalDegat.toFixed(2)+" \u20ac\n";
+    txt+="=".repeat(55)+"\n";
+  }
+
+  txt+="\n\n─".repeat(55)+"\n\n";
+  txt+=`En foi de quoi, nous clôturons ici le présent procès-verbal établi en 3 exemplaires, pour servir et valoir ce que de droit.\n\n`;
+  txt+=`Fait à ${edl.adr}, le ${jour} ${mois} ${an}.\n\n`;
+  txt+="L'Expert : ..............................................\n\n";
+  txt+="Signature du propriétaire / mandataire :\n\n\n\n";
+  txt+="Signature du locataire :\n\n\n";
+
+  try{navigator.clipboard.writeText(txt).then(()=>toast("Procès-verbal copié dans le presse-papier"));}
+  catch(e){ const ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);toast("Procès-verbal copié"); }
+});
+
+/* =====================================================
+   SIGNATURE
+   ===================================================== */
+function setupSig(id,saved){
+  const canvas=document.getElementById(id);
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.parentElement.getBoundingClientRect();
+  canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
+  const ctx=canvas.getContext("2d"); ctx.scale(dpr,dpr);
+  ctx.strokeStyle="#2B2620"; ctx.lineWidth=2.2; ctx.lineCap="round"; ctx.lineJoin="round";
+  let drawing=false,lx=0,ly=0;
+  if(saved){const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,rect.width,rect.height);img.src=saved;}
+  const pos=e=>{const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};};
+  canvas.addEventListener("touchstart",e=>{e.preventDefault();drawing=true;const p=pos(e);lx=p.x;ly=p.y;},{passive:false});
+  canvas.addEventListener("touchmove",e=>{if(!drawing)return;e.preventDefault();const p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;},{passive:false});
+  canvas.addEventListener("touchend",()=>{if(!drawing)return;drawing=false;const edl=cur();edl[id]=canvas.toDataURL();saveDB();});
+  canvas.addEventListener("mousedown",e=>{drawing=true;const p=pos(e);lx=p.x;ly=p.y;});
+  canvas.addEventListener("mousemove",e=>{if(!drawing)return;const p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;});
+  window.addEventListener("mouseup",()=>{if(!drawing)return;drawing=false;const edl=cur();edl[id]=canvas.toDataURL();saveDB();});
+}
+document.querySelectorAll(".sign-clear").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const id=btn.dataset.t; const canvas=document.getElementById(id);
+    canvas.getContext("2d").clearRect(0,0,canvas.width,canvas.height);
+    const edl=cur(); edl[id]=null; saveDB();
+  });
+});
+
+/* =====================================================
+   HELP
+   ===================================================== */
+document.getElementById("helpBtn").addEventListener("click",()=>{
+  alert("MÉTHODE DE TRAVAIL\n\n▶ ENTRÉE :\n1. Saisissez les informations administratives (bail, parties, compteurs, clés, calorimètres)\n2. Parcourez chaque pièce onglet par onglet\n3. Pour chaque poste, sélectionnez l\u2019état :\n   Neuf · Récent · Terne · Défraîchi · Usagé · Amorti\n4. Commentez avec précision (emplacement, dimension, nature du défaut)\n5. Cochez 'Non concerné' si le poste n\u2019existe pas\n6. Terminez par signatures et exportez le procès-verbal\n\n▶ SORTIE :\n— Relevez d\u2019abord les attestations d\u2019entretien\n— Consultez et lisez l\u2019ELE avant la visite\n— Peintures amorties sur 6 ans (non imputables)\n— Saisissez un montant € pour chaque dégât imputable\n— Discutez le chiffrage avec les parties\n\n▶ DÉLAIS LÉGAUX :\n7 jours : plomberie/électricité\n30 jours : remarques après réception du rapport\nJ+0 : envoi des compteurs par mail aux parties\n\n▶ VOCABULAIRE :\nSur chaque corps d\u2019état, le bouton bleu 'Vocabulaire' donne accès aux termes professionnels.");
+});
+
+/* =====================================================
+   INSTALL HINT
+   ===================================================== */
+if(/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.navigator.standalone)
+  document.getElementById("installHint").classList.add("on");
+
+/* =====================================================
+   INIT
+   ===================================================== */
+renderHome();
+</script>
+</body>
+</html>
